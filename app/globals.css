@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-kopf-orange: #EA580C;
+  --color-kopf-charcoal: #1C1917;
+  --font-sans: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #1C1917;
+  color: #e7e5e4;
+  font-family: var(--font-inter, Arial, Helvetica, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(28, 25, 23, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Orange gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #EA580C 0%, #F97316 60%, #FBBF24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Bento card hover */
+.bento-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(234, 88, 12, 0.15);
+}
+
+/* Hero overlay */
+.hero-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(28, 25, 23, 0.95) 0%,
+    rgba(28, 25, 23, 0.75) 55%,
+    rgba(28, 25, 23, 0.35) 100%
+  );
+}
+@media (max-width: 768px) {
+  .hero-overlay {
+    background: rgba(28, 25, 23, 0.88);
+  }
+}
+
+/* Gradient border */
+.gradient-border {
+  border: 1px solid transparent;
+  background: linear-gradient(#292524, #292524) padding-box,
+              linear-gradient(135deg, #EA580C, transparent) border-box;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #1C1917; }
+::-webkit-scrollbar-thumb { background: #EA580C; border-radius: 3px; }
+
+/* Fade-in up animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Mobile menu slide */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mobile-menu-enter {
+  animation: slideDown 0.2s ease forwards;
+}
+
+/* Stats pulse */
+@keyframes pulse-orange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(234, 88, 12, 0); }
+}
+.pulse-orange {
+  animation: pulse-orange 2s infinite;
+}
