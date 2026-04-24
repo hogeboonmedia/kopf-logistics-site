@@ -17,7 +17,8 @@
   --font-display: var(--font-anton);
   --font-body: var(--font-inter);
   --font-mono: var(--font-jetbrains);
-  --font-accent: var(--font-playfair);
+  /* --font-accent uses system Georgia — no web-font download for this one */
+  --font-accent: Georgia, "Times New Roman", Times, serif;
 }
 
 /* -----------  SEMANTIC THEME TOKENS  -----------
@@ -240,7 +241,7 @@
 }
 
 .kopf-accent-italic {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-weight: 500;
 }
@@ -427,7 +428,7 @@ button:hover .theme-icon {
   border-left: 4px solid var(--accent);
   padding: 0.5em 0 0.5em 1.25em;
   margin: 1.75em 0;
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 1.2em;
   color: var(--text);

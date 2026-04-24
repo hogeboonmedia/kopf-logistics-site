@@ -43,6 +43,17 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.pexels.com", pathname: "/photos/**" },
       { protocol: "https", hostname: "img.youtube.com", pathname: "/**" },
     ],
+    // Prefer modern formats. AVIF is ~25–35% smaller than WebP for photos,
+    // WebP ~25% smaller than JPEG. Next.js falls back automatically for older
+    // browsers. This is the single biggest lever for LCP on image-heavy pages.
+    formats: ["image/avif", "image/webp"],
+    // Cache optimized image variants at the CDN for 30 days (default is 60s).
+    // Next rebuilds regenerate keys so this doesn't cause stale images.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+  },
+  // Keep compiled output smaller: drop console.* in production except warn/error.
+  compiler: {
+    removeConsole: { exclude: ["warn", "error"] },
   },
   async headers() {
     return [

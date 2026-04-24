@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Inter, JetBrains_Mono, Playfair_Display } from "next/font/google";
+import { Anton, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ThemeScript from "@/components/ui/ThemeScript";
 
+// Anton = display type (hero + section H1/H2). Preloaded so the above-fold
+// hero doesn't flash in fallback font.
 const anton = Anton({
   variable: "--font-anton",
   subsets: ["latin"],
@@ -13,24 +15,26 @@ const anton = Anton({
   display: "swap",
 });
 
+// Inter = body text. Small subset loaded for first paint.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
 
+// JetBrains Mono = eyebrows, tabular numbers, phone numbers. Not on the LCP
+// critical path, so skip the automatic <link rel="preload"> — saves one
+// round-trip on first paint.
 const jetbrains = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  style: ["italic"],
-  display: "swap",
-});
+// Playfair removed — was only used in 3 blockquotes with Georgia as the
+// fallback. Georgia is a universally-available system serif, so dropping the
+// web-font download saves ~25 KB + 1 preload round-trip.
 
 export const metadata: Metadata = {
   title: {
@@ -140,11 +144,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${anton.variable} ${inter.variable} ${jetbrains.variable} ${playfair.variable}`}
+      className={`${anton.variable} ${inter.variable} ${jetbrains.variable}`}
       suppressHydrationWarning
     >
       <head>
         <ThemeScript />
+        {/* Preconnect hints cut latency for third-party resources that load
+          * after first paint: YouTube thumbnails (video embeds), Cloudflare
+          * Turnstile (contact form + comments), GitHub OAuth API (admin login). */}
+        <link rel="preconnect" href="https://img.youtube.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://challenges.cloudflare.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.youtube.com" />
       </head>
       <body className="min-h-screen flex flex-col" style={{ background: "var(--bg)", color: "var(--text)" }}>
         <Script
