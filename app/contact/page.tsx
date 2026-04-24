@@ -1,323 +1,213 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock,
-  ArrowRight,
-  Truck,
-  TrendingUp,
-  Package,
-  Shield,
-} from "lucide-react";
+import Button from "@/components/ui/Button";
+import SectionHeader from "@/components/ui/SectionHeader";
+import PhoneEmailBlock from "@/components/ui/PhoneEmailBlock";
+import ContactForm from "@/components/sections/ContactForm";
+import { MapPin, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Kopf Logistics Group | Elkhart Indiana Freight Broker",
+  title: "Contact",
   description:
-    "Contact Kopf Logistics Group at (574) 264-0990. Headquarters at 2311 Toledo Road, Elkhart, IN. Terminals in Athens, GA and Seaford, DE.",
+    "Contact Kopf Logistics Group. Three terminals — Elkhart IN · Athens GA · Seaford DE. T: 574.349.5600 · E: recruiter@kopflogisticsgroup.com",
+  alternates: { canonical: "/contact" },
 };
 
-const locations = [
+const keyContacts = [
   {
-    name: "Elkhart, Indiana",
-    label: "Headquarters",
-    address: "2311 Toledo Road",
-    city: "Elkhart, IN 46516",
-    phone: "(574) 264-0990",
-    hours: "Mon–Fri 7:00 AM – 6:00 PM CT",
-    primary: true,
+    region: "Indiana",
+    people: [
+      { name: "Greg Taylor", title: "Freight Coordinator", city: "Elkhart, Indiana", phone: "574.971.8689" },
+      { name: "Tom Stanfill", title: "Freight Coordinator", city: "Elkhart, Indiana", phone: "574.971.8689" },
+    ],
   },
   {
-    name: "Athens, Georgia",
-    label: "Terminal",
-    address: "Terminal Location",
-    city: "Athens, GA",
-    phone: "(574) 264-0990",
-    hours: "Mon–Fri 8:00 AM – 5:00 PM ET",
-    primary: false,
-  },
-  {
-    name: "Seaford, Delaware",
-    label: "Terminal",
-    address: "Terminal Location",
-    city: "Seaford, DE",
-    phone: "(574) 264-0990",
-    hours: "Mon–Fri 8:00 AM – 5:00 PM ET",
-    primary: false,
+    region: "Operations",
+    people: [
+      { name: "Howard Smith", title: "Operations Manager", city: "Elkhart, Indiana", phone: "574.971.8182" },
+      { name: "Jeanie Northcutt", title: "Director of Recruiting", city: "Athens, Georgia", phone: "574.349.5600" },
+    ],
   },
 ];
 
-const quickLinks = [
+const terminals = [
   {
-    icon: Package,
-    title: "Get a Freight Quote",
-    description: "Shippers: get competitive rates in under an hour.",
-    href: "/shippers#quote",
-    cta: "Request a Quote",
+    city: "Elkhart, Indiana",
+    address: ["2311 Toledo Road", "Elkhart, Indiana 46516"],
+    phone: "574.971.8689",
+    mapEmbed:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.0829017909637!2d-85.92794868456525!3d41.67555297923882!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8816e81c709eb109%3A0x13de7f923c364d6e!2s2311%20Toledo%20Rd%2C%20Elkhart%2C%20IN%2046516!5e0!3m2!1sen!2sus!4v1625781262802!5m2!1sen!2sus",
+    directions: "https://www.google.com/maps/place/2311+Toledo+Rd,+Elkhart,+IN+46516",
+    badge: "HQ",
   },
   {
-    icon: TrendingUp,
-    title: "Agent Application",
-    description: "Independent agents: apply for a 70/30 split.",
-    href: "/freight-agents#apply",
-    cta: "Apply Now",
+    city: "Athens, Georgia",
+    address: ["145 Newton Bridge Industrial Way", "Athens, Georgia 30601"],
+    phone: "574.971.8689",
+    mapEmbed:
+      "https://www.google.com/maps?q=145+Newton+Bridge+Industrial+Way,+Athens,+GA+30601&output=embed",
+    directions: "https://www.google.com/maps/place/145+Newton+Bridge+Rd,+Athens,+GA+30601",
+    badge: "Southeast",
   },
   {
-    icon: Truck,
-    title: "Carrier Setup",
-    description: "Carriers: start hauling Kopf freight this week.",
-    href: "/carriers#setup",
-    cta: "Set Up Now",
-  },
-  {
-    icon: Shield,
-    title: "Driver Inquiries",
-    description: "Questions about safety, freight, or partnerships.",
-    href: "/drivers",
-    cta: "Learn More",
+    city: "Seaford, Delaware",
+    address: ["8589 Hearns Pond Rd", "Seaford, Delaware 19973"],
+    phone: "302.629.4255",
+    mapEmbed:
+      "https://www.google.com/maps?q=8589+Hearns+Pond+Rd,+Seaford,+DE+19973&output=embed",
+    directions: "https://www.google.com/maps/place/8589+Hearns+Pond+Rd,+Seaford,+DE+19973",
+    badge: "Northeast",
   },
 ];
 
 export default function ContactPage() {
   return (
     <>
-      {/* ── HERO ── */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-orange-600/20 border border-orange-600/40 rounded-full px-4 py-1.5 mb-6">
-              <span className="text-orange-400 text-sm font-medium">Get In Touch</span>
-            </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Let&apos;s talk
-              <br />
-              <span className="gradient-text">freight.</span>
-            </h1>
-            <p className="text-xl text-stone-300 leading-relaxed">
-              Whether you need a spot rate, want to discuss a long-term
-              partnership, or are ready to join our agent team — our people pick
-              up the phone.
-            </p>
+      {/* HERO */}
+      <section className="relative overflow-hidden isolate">
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-[var(--color-kopf-ink)] via-[var(--color-kopf-ink)]/95 to-[var(--color-kopf-ink-2)]" />
+
+        <div className="relative px-6 lg:px-10 pt-20 pb-16 md:pt-28 md:pb-20 max-w-6xl">
+          <div className="flex items-center gap-3 mb-6 kopf-fade-up">
+            <span className="kopf-chapter">§ Contact</span>
+            <span className="h-px w-10 bg-[var(--color-kopf-orange)]" />
+            <span className="kopf-eyebrow">Three Terminals · Two Mission</span>
+          </div>
+
+          <h1 className="font-[var(--font-anton)] uppercase leading-[0.9] tracking-tight text-[var(--color-kopf-bone)] text-[14vw] sm:text-7xl md:text-8xl lg:text-[9rem] kopf-fade-up kopf-fade-up-delay-1">
+            Get in <span className="text-[var(--color-kopf-orange)]">Touch</span>
+          </h1>
+
+          <p className="mt-8 max-w-2xl text-base md:text-lg leading-relaxed text-[var(--color-kopf-bone-muted)] kopf-fade-up kopf-fade-up-delay-2">
+            We deliver outstanding logistics services and consistent value and
+            dependability to each of our customers.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-8 kopf-fade-up kopf-fade-up-delay-3">
+            <PhoneEmailBlock />
+            <Button href="/about">About Us</Button>
           </div>
         </div>
+        <div className="tread-divider" aria-hidden="true" />
       </section>
 
-      {/* ── QUICK LINKS ── */}
-      <section className="pb-16 px-4 sm:px-6 lg:px-8">
+      {/* §01 KEY CONTACTS */}
+      <section className="relative px-6 lg:px-10 py-20 md:py-28">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickLinks.map((link) => (
-              <Link
-                key={link.title}
-                href={link.href}
-                className="bg-stone-900 border border-stone-800 hover:border-orange-600/40 rounded-xl p-5 group bento-card"
-              >
-                <div className="w-9 h-9 bg-orange-600/15 rounded-lg flex items-center justify-center mb-3 group-hover:bg-orange-600/25 transition-colors">
-                  <link.icon className="w-4 h-4 text-orange-500" />
-                </div>
-                <h3 className="text-white font-semibold text-sm mb-1.5">{link.title}</h3>
-                <p className="text-stone-400 text-xs leading-relaxed mb-3">{link.description}</p>
-                <span className="text-orange-500 text-xs font-medium flex items-center gap-1">
-                  {link.cta} <ArrowRight className="w-3 h-3" />
-                </span>
-              </Link>
+          <SectionHeader
+            chapter="01"
+            eyebrow="Meet the People"
+            title="Key Contacts"
+          />
+
+          <div className="mt-14 grid gap-10 lg:grid-cols-2">
+            {keyContacts.map((group) => (
+              <div key={group.region}>
+                <h3 className="kopf-eyebrow mb-5">§ {group.region}</h3>
+                <ul className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+                  {group.people.map((p) => (
+                    <li key={p.name + p.phone} className="grid grid-cols-[1fr_auto] gap-6 items-baseline py-5">
+                      <div>
+                        <div className="font-[var(--font-anton)] uppercase text-2xl leading-none text-[var(--color-kopf-bone)] tracking-tight">
+                          {p.name}
+                        </div>
+                        <div className="mt-1 font-[var(--font-jetbrains)] text-[11px] uppercase tracking-[0.22em] text-[var(--color-kopf-concrete)]">
+                          {p.title} · {p.city}
+                        </div>
+                      </div>
+                      <a
+                        href={`tel:${p.phone.replace(/\./g, "")}`}
+                        className="font-[var(--font-jetbrains)] tabular-nums text-sm text-[var(--color-kopf-orange)] hover:text-[var(--color-kopf-bone)] transition inline-flex items-center gap-2"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        T: {p.phone}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* ── MAIN CONTENT ── */}
-      <section className="py-10 px-4 sm:px-6 lg:px-8 border-t border-stone-800">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16">
-            {/* Contact Form */}
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Send us a message</h2>
-              <p className="text-stone-400 text-sm mb-8">
-                We respond to all inquiries within one business hour during office
-                hours. For urgent freight needs, call us directly.
-              </p>
-
-              <form
-                action="https://formspree.io/f/xqaqkqkp"
-                method="POST"
-                className="flex flex-col gap-5"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-stone-400 text-sm mb-1.5">Full Name *</label>
-                    <input
-                      name="name"
-                      type="text"
-                      required
-                      placeholder="Jane Smith"
-                      className="w-full bg-stone-900 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-stone-400 text-sm mb-1.5">Company</label>
-                    <input
-                      name="company"
-                      type="text"
-                      placeholder="Your company"
-                      className="w-full bg-stone-900 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-stone-400 text-sm mb-1.5">Email *</label>
-                    <input
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="jane@company.com"
-                      className="w-full bg-stone-900 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-stone-400 text-sm mb-1.5">Phone</label>
-                    <input
-                      name="phone"
-                      type="tel"
-                      placeholder="(555) 000-0000"
-                      className="w-full bg-stone-900 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-stone-400 text-sm mb-1.5">I am a...</label>
-                  <select
-                    name="inquiry_type"
-                    className="w-full bg-stone-900 border border-stone-700 rounded px-4 py-2.5 text-white text-sm focus:border-orange-600 transition-colors"
-                  >
-                    <option value="">Select...</option>
-                    <option>Shipper needing freight services</option>
-                    <option>Independent freight agent interested in joining</option>
-                    <option>Carrier wanting to partner with Kopf</option>
-                    <option>Driver with questions</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-stone-400 text-sm mb-1.5">Message *</label>
-                  <textarea
-                    name="message"
-                    rows={5}
-                    required
-                    placeholder="How can we help you?"
-                    className="w-full bg-stone-900 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors resize-none"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3.5 rounded transition-colors duration-200 flex items-center justify-center gap-2"
-                >
-                  Send Message
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <p className="text-stone-600 text-xs">
-                  For urgent freight, call us directly at (574) 264-0990. 24/7 dispatch available.
-                </p>
-              </form>
-            </div>
-
-            {/* Contact Info */}
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Contact information</h2>
-              <p className="text-stone-400 text-sm mb-8">
-                Reach us by phone, email, or visit one of our three terminal locations.
-              </p>
-
-              {/* Direct contact */}
-              <div className="flex flex-col gap-4 mb-10">
-                <a
-                  href="tel:5742640990"
-                  className="flex items-center gap-4 p-4 bg-stone-900 border border-stone-800 rounded-xl hover:border-stone-700 transition-colors group"
-                >
-                  <div className="w-10 h-10 bg-orange-600/15 rounded-lg flex items-center justify-center shrink-0">
-                    <Phone className="w-5 h-5 text-orange-500" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium">(574) 264-0990</p>
-                    <p className="text-stone-500 text-xs">Main line — 24/7 dispatch</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-stone-600 group-hover:text-orange-500 transition-colors ml-auto" />
-                </a>
-                <a
-                  href="mailto:info@kopflogisticsgroup.com"
-                  className="flex items-center gap-4 p-4 bg-stone-900 border border-stone-800 rounded-xl hover:border-stone-700 transition-colors group"
-                >
-                  <div className="w-10 h-10 bg-orange-600/15 rounded-lg flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5 text-orange-500" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium">info@kopflogisticsgroup.com</p>
-                    <p className="text-stone-500 text-xs">General inquiries</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-stone-600 group-hover:text-orange-500 transition-colors ml-auto" />
-                </a>
-              </div>
-
-              {/* Locations */}
-              <h3 className="text-white font-semibold mb-4">Our Locations</h3>
-              <div className="flex flex-col gap-4">
-                {locations.map((loc) => (
-                  <div
-                    key={loc.name}
-                    className={`p-5 rounded-xl border ${
-                      loc.primary
-                        ? "bg-orange-600/10 border-orange-600/30"
-                        : "bg-stone-900 border-stone-800"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <MapPin className="w-4 h-4 text-orange-500 shrink-0" />
-                      <span className="text-white font-semibold text-sm">{loc.name}</span>
-                      {loc.primary && (
-                        <span className="text-xs text-orange-400 bg-orange-600/10 border border-orange-600/20 rounded-full px-2 py-0.5">
-                          HQ
-                        </span>
-                      )}
-                    </div>
-                    <div className="pl-6 flex flex-col gap-1">
-                      <p className="text-stone-400 text-sm">{loc.address}</p>
-                      <p className="text-stone-400 text-sm">{loc.city}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Clock className="w-3.5 h-3.5 text-stone-600" />
-                        <p className="text-stone-500 text-xs">{loc.hours}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {/* Mailing */}
+          <div className="mt-14 border-l-4 border-[var(--color-kopf-orange)] pl-6 max-w-md">
+            <h3 className="kopf-eyebrow mb-3">§ Contact Kopf Logistics</h3>
+            <div className="font-[var(--font-jetbrains)] tabular-nums text-sm leading-relaxed text-[var(--color-kopf-bone)]">
+              PO Box 207
+              <br />
+              Goshen, Indiana 46527
+              <br />
+              T: 574.971.8689
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── EMERGENCY DISPATCH ── */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 mt-10 bg-stone-900/50 border-t border-stone-800">
+      {/* §02 CONTACT FORM */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-y border-white/[0.05] px-6 lg:px-10 py-20 md:py-28">
+        <div className="max-w-3xl mx-auto">
+          <SectionHeader
+            chapter="02"
+            eyebrow="One Business Day Response"
+            title="Send Us a Message"
+          />
+          <ContactForm turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
+        </div>
+      </section>
+
+      {/* §03 TERMINALS */}
+      <section className="relative px-6 lg:px-10 py-20 md:py-28">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-orange-600/10 to-transparent border border-orange-600/20 rounded-xl p-8 flex flex-col sm:flex-row items-center gap-6">
-            <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shrink-0">
-              <Phone className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1 text-center sm:text-left">
-              <h3 className="text-white font-bold text-xl mb-1">24/7 Dispatch & Emergency Line</h3>
-              <p className="text-stone-400 text-sm">
-                Load emergencies don&apos;t follow business hours. Our dispatch team is available around
-                the clock for breakdowns, weather delays, and urgent capacity needs.
-              </p>
-            </div>
-            <a
-              href="tel:5742640990"
-              className="shrink-0 inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold px-6 py-3 rounded transition-colors duration-200"
-            >
-              <Phone className="w-4 h-4" />
-              (574) 264-0990
-            </a>
+          <SectionHeader
+            chapter="03"
+            eyebrow="3 Locations · 48 States"
+            title="Terminals"
+          />
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+            {terminals.map((t) => (
+              <div key={t.city} className="border border-white/[0.08] bg-[var(--color-kopf-ink-2)] flex flex-col">
+                <div className="relative aspect-[4/3] bg-[var(--color-kopf-ink)] overflow-hidden">
+                  <iframe
+                    src={t.mapEmbed}
+                    title={`Map of ${t.city} terminal`}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full grayscale contrast-125 opacity-80"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  <span className="absolute top-4 left-4 bg-[var(--color-kopf-orange)] text-[var(--color-kopf-ink)] px-3 py-1 font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em] font-semibold">
+                    {t.badge}
+                  </span>
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="font-[var(--font-anton)] uppercase text-2xl leading-none tracking-tight">
+                    {t.city}
+                  </h3>
+                  <div className="mt-4 font-[var(--font-jetbrains)] tabular-nums text-sm leading-relaxed text-[var(--color-kopf-bone-muted)]">
+                    {t.address[0]}
+                    <br />
+                    {t.address[1]}
+                    <br />
+                    <a
+                      href={`tel:${t.phone.replace(/\./g, "")}`}
+                      className="text-[var(--color-kopf-orange)] hover:text-[var(--color-kopf-bone)] transition"
+                    >
+                      T: {t.phone}
+                    </a>
+                  </div>
+                  <div className="mt-5 pt-4 border-t border-white/[0.08] mt-auto">
+                    <a
+                      href={t.directions}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] font-[var(--font-jetbrains)] font-semibold text-[var(--color-kopf-bone)] hover:text-[var(--color-kopf-orange)] transition"
+                    >
+                      <MapPin className="w-3.5 h-3.5" /> Get Directions
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -1,0 +1,65 @@
+{
+  "source": "https://www.google.com/maps/place/Kopf+Logistics+Group/",
+  "placeId": "0xff0803f66a413836",
+  "overallRating": 4.6,
+  "totalReviews": 94,
+  "extractedAt": "2026-04-19",
+  "fiveStarReviews": [
+    {
+      "name": "Nelson Caseiro",
+      "stars": 5,
+      "date": "a year ago",
+      "text": "Kopf Logistics Group has consistently proven to be a reliable partner in the logistics industry. Their dedication to efficiency and customer satisfaction sets them apart from competitors.",
+      "role": "Partner"
+    },
+    {
+      "name": "Hillandale",
+      "stars": 5,
+      "date": "7 years ago",
+      "text": "We have been working with Kopf and the Search2Transport team for quite some time now. They are a great asset to our organization. They do a phenomenal job helping cover our overflow freight. They provide great customer service and teamwork, their team is very professional and courteous. We love working with them!",
+      "role": "Shipper"
+    },
+    {
+      "name": "Lamont Cotton",
+      "stars": 5,
+      "date": "3 years ago",
+      "text": "Ran a load for this company, everything went very well. Pick and drop off times were as they said. Great company to work with. Rate was great and Zach was amazing to work with and was there throughout the whole process if I had any questions. I would recommend this company.",
+      "role": "Carrier"
+    },
+    {
+      "name": "Angel S.",
+      "stars": 5,
+      "date": "3 years ago",
+      "text": "Great Service. It was a pleasure working with Zach this time. It was easy to work with him. I also have been collaborating for about 10 years with Tom Stanfill. He is such a nice guy, always helpful. I wish all the brokers were like Kopf.",
+      "role": "Carrier Partner"
+    },
+    {
+      "name": "Ochuko Sodje",
+      "stars": 5,
+      "date": "2 years ago",
+      "text": "This is one of the best companies I have ever worked with. Zach Moore was the guy I worked with. Please always update me on your Hotshot loads in the St. Louis, MO area. I will definitely work with you guys again.",
+      "role": "Owner Operator"
+    },
+    {
+      "name": "Akpoemuode Ovien",
+      "stars": 5,
+      "date": "2 years ago",
+      "text": "Working with you guys was an exciting and uplifting experience. I will never forget the heart-warming treatment from your well-trained and experienced staff. I wish all logistics companies were like yours.",
+      "role": "Carrier"
+    },
+    {
+      "name": "Matar Transport",
+      "stars": 5,
+      "date": "8 months ago",
+      "text": "Very good company and employees — especially Rishab, very polite and helpful. I would like to do more business in the future.",
+      "role": "Contract Carrier"
+    },
+    {
+      "name": "Victorious Ambition",
+      "stars": 5,
+      "date": "9 months ago",
+      "text": "Nolan was a man of his word. That's what you ask for and he delivered. His company is better served with people like him leading the way. They have premium freight opportunities and deserve to be acknowledged.",
+      "role": "Freight Agent"
+    }
+  ]
+}

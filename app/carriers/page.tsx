@@ -1,354 +1,473 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  Truck,
-  DollarSign,
-  Shield,
-  Clock,
-  CheckCircle,
-  ArrowRight,
-  Star,
-  Users,
-  BarChart3,
-} from "lucide-react";
+import Image from "next/image";
+import Button from "@/components/ui/Button";
+import SectionHeader from "@/components/ui/SectionHeader";
+import PhoneEmailBlock from "@/components/ui/PhoneEmailBlock";
+import { Quote, Shield, Truck, Clock, Route, FileCheck, Award, CircuitBoard } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Carrier Partnerships | Fast ACH Pay | Kopf Logistics Group",
+  title: "Carriers",
   description:
-    "Partner with Kopf Logistics Group. ACH payments, up to 40% of line haul (max $2,500/load) after 3 loads, consistent freight, and a team that communicates.",
+    "Become a Kopf Logistics Group contract carrier and enjoy a seamless, automated onboarding process for efficient and reliable service.",
+  alternates: { canonical: "/carriers" },
 };
 
-const benefits = [
-  {
-    icon: DollarSign,
-    title: "Fast ACH Pay",
-    description:
-      "After your first 3 loads, earn up to 40% of line haul — maximum $2,500 per load — paid via ACH. No factoring fees, no delays. We pay when we say we'll pay.",
-    highlight: "Up to 40% Line Haul",
-  },
-  {
-    icon: Shield,
-    title: "Real Freight, Real Rates",
-    description:
-      "We don't play rate games. You'll know exactly what you're getting paid before you accept a load. Transparent pricing, no post-delivery deductions.",
-    highlight: "No Surprises",
-  },
-  {
-    icon: Truck,
-    title: "Consistent Load Volume",
-    description:
-      "We work hard to keep our preferred carriers loaded — because we know empty miles cost you money. Once you're in our network, we think of you first.",
-    highlight: "Preferred Partners",
-  },
-  {
-    icon: Clock,
-    title: "24/7 Dispatch Support",
-    description:
-      "Breakdowns, weather, delays — our team picks up the phone anytime. You're never left stranded on the side of the road without support.",
-    highlight: "Always Reachable",
-  },
-  {
-    icon: Users,
-    title: "No-Hassle Setup",
-    description:
-      "Fast carrier setup with our compliance team. MC, DOT, W-9, and insurance verification handled efficiently so you can start hauling.",
-    highlight: "Quick Onboarding",
-  },
-  {
-    icon: BarChart3,
-    title: "Rate Transparency",
-    description:
-      "We provide market intel on lane rates when you ask. We want you profitable — a carrier that makes money keeps hauling for us.",
-    highlight: "Open Communication",
-  },
+const advantages = [
+  { label: "A Second Generation Truck Brokerage", Icon: Award },
+  { label: "Sound Financial Strength", Icon: Shield },
+  { label: "Freight to Fill Your Trailers", Icon: Truck },
+  { label: "Tri-haul Routing to Reduce Deadhead Miles", Icon: Route },
+  { label: "Brokerage Insurance that Meets or Exceeds Industry Requirements", Icon: FileCheck },
+  { label: "$100K Property Surety Bond", Icon: Shield },
+  { label: "Internet Truckstop Diamond Broker", Icon: Award },
+  { label: "EDI", Icon: CircuitBoard },
 ];
 
-const onboardingSteps = [
-  { step: "01", title: "Contact Us", description: "Call or complete the carrier setup form below. Have your MC number and insurance certificate ready." },
-  { step: "02", title: "Compliance Check", description: "Our carrier compliance team verifies your FMCSA authority, safety rating, and insurance within 24 hours." },
-  { step: "03", title: "First Load", description: "Our team will match you with a load that fits your equipment and preferred lanes. Standard pay terms apply for loads 1–3." },
-  { step: "04", title: "Preferred Status", description: "After 3 loads, you unlock our preferred carrier tier — faster pay, better rates, and first-call status on new freight." },
+const driverTypes = [
+  { label: "Over the Road", icon: "drivers_road.png" },
+  { label: "Regional", icon: "drivers_regional.png" },
+  { label: "Part-Time", icon: "drivers_part-time.png" },
+  { label: "Casual", icon: "drivers_casual.png" },
 ];
 
-const requirements = [
-  "Active FMCSA operating authority (MC number)",
-  "Minimum $1,000,000 cargo insurance",
-  "Minimum $1,000,000 general liability",
-  "Satisfactory FMCSA safety rating",
-  "Active DOT number",
-  "Signed carrier agreement and W-9",
-];
-
-const testimonials = [
+const safetyRatings = [
   {
-    quote:
-      "Kopf always has my rate confirmed before I pick up. They answer at 11 PM when my driver is stuck. That's all I ask — reliability. They deliver.",
-    author: "Small Fleet Owner",
-    company: "Dry Van, 4 trucks",
-    rating: 5,
+    rating: "Satisfactory",
+    body: "Per US DOT safety rating, carrier has in place adequate safety management controls that function effectively to make certain acceptable compliance with applicable safety requirements are met to reduce safety risks and may be approved to haul.",
+    tone: "positive",
   },
   {
-    quote:
-      "Quick pay, honest rates, and they don't waste your time. I've been hauling for Kopf for two years and they're one of three brokers I actually trust.",
-    author: "Owner-Operator",
-    company: "Flatbed Specialist",
-    rating: 5,
+    rating: "Conditional",
+    body: "Per US DOT safety rating, \"Conditional\" rated carrier may be subject to additional qualification processing and in some circumstances may be approved to haul.",
+    tone: "caution",
+  },
+  {
+    rating: "Unsatisfactory",
+    body: "Per US DOT safety rating, carrier SHALL NOT be approved if it has an \"Unsatisfactory\" DOT safety rating.",
+    tone: "negative",
+  },
+  {
+    rating: "Unrated",
+    body: "Per US DOT, a carrier who has not been rated by the US DOT may qualify to haul freight, but will be subject to additional carrier qualification procedures prior to approval.",
+    tone: "caution",
+  },
+] as const;
+
+const insuranceRequirements = [
+  "Carrier must maintain and provide proof of insurance coverage with required coverage limits and A.M. Best's Financial Strength Rating of \"Good\" or better.",
+  "Minimum of $1 Million Auto Liability Policy with Current Effective Dates.",
+  "Minimum of $100,000 Motor Cargo Policy with Current Effective Dates.",
+  "Must List Reefer Breakdown Coverage and/or Exclusions for any Refrigerated Loads.",
+  "Must List Workers Compensation Policy with Limits According to State Requirements.",
+];
+
+const settlements = [
+  {
+    title: "Advances",
+    body: "A carrier may request a load advance up to 40% of the line haul, with a maximum of $2,500 issued per load. There is a $20 fee for fuel advances and a $5 fee for accessorial advances.",
+  },
+  {
+    title: "Standard Terms",
+    body: "24-day Standard Pay/ACH or Check by Mail, No Fees.",
+  },
+  {
+    title: "ACH Payments",
+    body: "We are pleased to offer the ACH Payment option for freight settlements via direct deposit to your bank checking or savings account. Participation in the ACH Payments Program is dependent on the carrier remitting all required paperwork for payment. There are no ACH participation fees.",
   },
 ];
 
 export default function CarriersPage() {
   return (
     <>
-      {/* ── HERO ── */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-stone-950 to-stone-950" />
-        <div className="absolute right-0 top-0 w-1/2 h-full opacity-5 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(circle at 80% 50%, #EA580C, transparent 60%)",
-          }}
+      {/* ═══════════════ HERO ═══════════════ */}
+      <section className="relative overflow-hidden isolate">
+        <Image
+          src="/pexels/truck_fleet.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center -z-20 opacity-55"
         />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-orange-600/20 border border-orange-600/40 rounded-full px-4 py-1.5 mb-6">
-              <span className="text-orange-400 text-sm font-medium">For Carriers</span>
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-[var(--color-kopf-ink)] via-[var(--color-kopf-ink)]/95 to-[var(--color-kopf-ink-2)]" />
+
+        <div className="relative px-6 lg:px-10 pt-20 pb-24 md:pt-28 md:pb-32 max-w-6xl">
+          <div className="flex items-center gap-3 mb-6 kopf-fade-up">
+            <span className="kopf-chapter">§ Carriers</span>
+            <span className="h-px w-10 bg-[var(--color-kopf-orange)]" />
+            <span className="kopf-eyebrow">Contract Carrier Onboarding</span>
+          </div>
+
+          <h1 className="font-[var(--font-anton)] uppercase leading-[0.9] tracking-tight text-[var(--color-kopf-bone)] text-[10vw] sm:text-6xl md:text-7xl lg:text-[6.5rem] max-w-5xl kopf-fade-up kopf-fade-up-delay-1">
+            How to Become a{" "}
+            <span className="text-[var(--color-kopf-orange)]">Contract Carrier</span>
+          </h1>
+
+          <p className="mt-8 max-w-3xl text-base md:text-lg leading-relaxed text-[var(--color-kopf-bone-muted)] kopf-fade-up kopf-fade-up-delay-2">
+            Are you looking to become a contract carrier with Kopf? Our experienced team
+            at Kopf Logistics Group is here to help you succeed. We provide a seamless
+            automated carrier onboarding process to help you comply with necessary
+            regulations and ensure you get started quickly. Our goal is to make the
+            automated carrier onboarding process simple and intuitive for all Drivers. We
+            believe our flexible rates and fees can be tailored to meet the individual
+            needs of our carrier partners.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-start gap-8 kopf-fade-up kopf-fade-up-delay-3">
+            <div>
+              <span className="block kopf-eyebrow mb-3">Get Started Today!</span>
+              <PhoneEmailBlock />
             </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Freight that pays.
-              <br />
-              <span className="gradient-text">Partners that communicate.</span>
-            </h1>
-            <p className="text-xl text-stone-300 leading-relaxed mb-8">
-              Kopf Logistics Group is built on long-term carrier relationships.
-              We pay on time, we answer the phone, and we don&apos;t play games
-              with your rate. Period.
+            <div className="flex gap-3 pt-5">
+              <Button
+                href="https://intelliapp.driverapponline.com/c/kopflogisticsgroup"
+                external
+                variant="solid"
+              >
+                Join Our Carrier Network
+              </Button>
+              <Button href="https://mycarrierpackets.com/" external>
+                MyCarrierPackets.com
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="tread-divider" aria-hidden="true" />
+      </section>
+
+      {/* ═══════════════ §01 CARRIERS ARE OUR BACKBONE ═══════════════ */}
+      <section className="relative px-6 lg:px-10 py-24 md:py-28">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-5">
+            <SectionHeader
+              chapter="01"
+              eyebrow="Family-Owned · 48 States"
+              title={
+                <>
+                  Carriers Are<br />
+                  <span className="text-[var(--color-kopf-orange)]">Our Backbone</span>
+                </>
+              }
+            />
+          </div>
+          <div className="lg:col-span-7 space-y-6 text-[var(--color-kopf-bone-muted)] text-base md:text-lg leading-relaxed">
+            <p>
+              We are a family-owned and operated business serving the transportation
+              industry through our broker division as a transportation property broker.
+              We service reefers, vans and flatbeds throughout the contiguous 48 states.
+              We have immediate freight hauling opportunities and view our contract
+              carrier network as the backbone of our company.
             </p>
-            <div className="flex flex-wrap gap-5 mb-10">
-              {[
-                { value: "Up to 40%", label: "of Line Haul" },
-                { value: "$2,500", label: "Max Per Load" },
-                { value: "3 Loads", label: "to Preferred Status" },
-              ].map((stat) => (
-                <div key={stat.label} className="bg-stone-900 border border-stone-800 rounded-lg px-5 py-3 text-center">
-                  <div className="text-2xl font-bold text-orange-500">{stat.value}</div>
-                  <div className="text-stone-400 text-xs mt-0.5">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#setup"
-                className="inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold px-8 py-4 rounded transition-all duration-200"
-              >
-                Set Up as a Carrier
-                <ArrowRight className="w-5 h-5" />
-              </a>
-              <a
-                href="tel:5742640990"
-                className="inline-flex items-center justify-center gap-2 border border-stone-700 hover:border-stone-500 text-white font-medium px-8 py-4 rounded transition-colors duration-200"
-              >
-                Call (574) 264-0990
-              </a>
-            </div>
+            <p>
+              Our carrier partners find joining Kopf Logistics Group is quick, simple, and
+              intuitive. With automated carrier onboarding, the carrier approval process
+              starts right away. The entire setup process was designed to suit the needs
+              of Drivers. With new online workflow tools and digital logging systems that
+              simplify operations, joining our network will undoubtedly set new carriers
+              up for success. Contact us today to learn more about how we can help you
+              grow your business.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── BENEFITS ── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-14">
-          <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-            Why Haul for Kopf
-          </p>
-          <h2 className="text-4xl font-bold text-white mb-4">
-            A broker worth hauling for.
-          </h2>
-          <p className="text-stone-400 max-w-xl mx-auto">
-            We know you have options. Here&apos;s why our preferred carriers
-            keep coming back load after load.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {benefits.map((benefit) => (
-            <div
-              key={benefit.title}
-              className="bg-stone-900 border border-stone-800 hover:border-orange-600/40 rounded-xl p-6 bento-card"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-10 h-10 bg-orange-600/15 rounded-lg flex items-center justify-center">
-                  <benefit.icon className="w-5 h-5 text-orange-500" />
-                </div>
-                <span className="text-xs text-orange-400 font-medium bg-orange-600/10 border border-orange-600/20 rounded-full px-3 py-1">
-                  {benefit.highlight}
+      {/* ═══════════════ §02 YOU CAN RELY ON US ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-y border-white/[0.05] px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 space-y-6 text-[var(--color-kopf-bone-muted)] text-base md:text-lg leading-relaxed">
+            <SectionHeader
+              chapter="02"
+              eyebrow="Built for Cash Flow"
+              title="You Can Rely On Us"
+            />
+            <p>
+              At Kopf Logistics Group, we excel at matching our contract carrier's
+              equipment to available freight and take on the tedious work required to
+              keep your trucks moving. We're committed to building strong relationships
+              with our carrier partners and offer a range of payment options, including
+              standard pay/ACH, and ACH payments. After successfully hauling and
+              delivering three loads, we also provide up to 40% of the line haul, with a
+              maximum of $2,500 per load.
+            </p>
+          </div>
+          <div className="lg:col-span-5 grid gap-4">
+            <div className="relative aspect-[4/3] overflow-hidden">
+              <Image
+                src="/pexels/driver_cab.jpg"
+                alt="Truck driver relying on Kopf's carrier network"
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="relative aspect-[5/2] grid place-items-center p-6 text-center overflow-hidden" style={{ background: "var(--accent)" }}>
+              <span aria-hidden="true" className="kopf-grain" />
+              <div className="relative" style={{ color: "var(--on-accent)" }}>
+                <span className="block font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em] mb-1 opacity-80">
+                  After 3 Loads · Max $2,500
                 </span>
+                <span className="block font-[var(--font-anton)] text-6xl leading-none">40%</span>
+                <span className="block mt-1 font-[var(--font-anton)] text-sm uppercase tracking-tight">Line-Haul Advance</span>
               </div>
-              <h3 className="text-white font-semibold text-lg mb-2">{benefit.title}</h3>
-              <p className="text-stone-400 text-sm leading-relaxed">{benefit.description}</p>
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
-      {/* ── ONBOARDING ── */}
-      <section className="py-20 bg-stone-900/50 border-y border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-              Getting Started
-            </p>
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Setup takes 24 hours.
-            </h2>
-            <p className="text-stone-400 max-w-xl mx-auto">
-              Our carrier onboarding is fast and painless. From first contact to first
-              load in less than 48 hours.
+      {/* ═══════════════ §03 ADVANTAGES GRID ═══════════════ */}
+      <section className="relative px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            chapter="03"
+            eyebrow="8 Pillars of Carrier Support"
+            title={
+              <>
+                A Second Generation<br />
+                <span className="text-[var(--color-kopf-orange)]">Truck Brokerage</span>
+              </>
+            }
+            kicker="Our second-generation truck brokerage is built on a foundation of sound financial strength, which enables us to offer:"
+          />
+          <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {advantages.map(({ label, Icon }, i) => (
+              <li
+                key={label}
+                className="group relative border border-white/[0.08] bg-[var(--color-kopf-ink-2)] p-6 hover:border-[var(--color-kopf-orange)] transition flex flex-col"
+              >
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-concrete)] group-hover:text-[var(--color-kopf-orange)] transition">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <Icon className="w-8 h-8 mt-4 text-[var(--color-kopf-orange)]" strokeWidth={1.3} />
+                <p className="mt-4 text-[var(--color-kopf-bone)] leading-snug font-[var(--font-anton)] uppercase tracking-tight">
+                  {label}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ═══════════════ TESTIMONIAL ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-y border-white/[0.05] px-6 lg:px-10 py-24 md:py-28">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="kopf-chapter">§ 04</span>
+            <span className="h-px w-10 bg-[var(--color-kopf-orange)]" />
+            <span className="kopf-eyebrow">What They Say</span>
+          </div>
+
+          <Quote className="w-14 h-14 text-[var(--color-kopf-orange)] mb-4" strokeWidth={1.2} />
+          <blockquote className="font-[var(--font-anton)] uppercase text-3xl md:text-5xl leading-[1.05] tracking-tight text-[var(--color-kopf-bone)] max-w-4xl">
+            "Kopf is a trusted name. They're a well-established company with a courteous,
+            professional and knowledgeable staff. We really appreciate their genuine
+            attitude and effort."
+          </blockquote>
+          <footer className="mt-8 flex items-center gap-4 pt-5 border-t border-white/[0.08] max-w-md">
+            <span className="block w-12 h-12 bg-[var(--color-kopf-orange)] grid place-items-center font-[var(--font-anton)] uppercase text-2xl text-[var(--color-kopf-ink)]">K</span>
+            <span>
+              <span className="block font-[var(--font-anton)] uppercase text-xl">Kyle</span>
+              <span className="block font-[var(--font-jetbrains)] text-xs uppercase tracking-[0.22em] text-[var(--color-kopf-concrete)]">
+                Contract Carrier
+              </span>
+            </span>
+          </footer>
+        </div>
+      </section>
+
+      {/* ═══════════════ §05 CARRIER REQUIREMENTS ═══════════════ */}
+      <section className="relative px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            chapter="05"
+            eyebrow="Qualification Standards"
+            title="Carrier Requirements"
+            kicker="To help us qualify your company as an approved contract carrier, please review the following requirements:"
+          />
+
+          {/* Operating Authority */}
+          <div className="mt-14 border-t border-white/[0.08] pt-10">
+            <h3 className="kopf-eyebrow mb-3">§ Operating Authority</h3>
+            <p className="text-[var(--color-kopf-bone-muted)] text-base md:text-lg leading-relaxed max-w-4xl">
+              Carrier must be licensed by the FMCSA and have active common, contract, or
+              both authorities for a minimum of six months. If the carrier's authority
+              has been revoked and reinstated more than 30 days apart, the carrier must
+              wait six months for requalification. If the carrier's authority has been
+              revoked and reinstated less than 30 days apart, it may be reviewed for
+              requalification at the time of request.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {onboardingSteps.map((step) => (
-              <div key={step.step} className="text-center">
-                <div className="text-6xl font-black text-orange-600/15 mb-3">{step.step}</div>
-                <h3 className="text-white font-semibold mb-2">{step.title}</h3>
-                <p className="text-stone-400 text-sm">{step.description}</p>
+
+          {/* Safety Rating */}
+          <div className="mt-14 border-t border-white/[0.08] pt-10">
+            <h3 className="kopf-eyebrow mb-6">§ Safety Rating</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {safetyRatings.map((r) => {
+                const color =
+                  r.tone === "positive"
+                    ? "border-[var(--color-kopf-orange)]"
+                    : r.tone === "negative"
+                      ? "border-red-700"
+                      : "border-white/20";
+                return (
+                  <div key={r.rating} className={`border-l-4 ${color} pl-5 py-3`}>
+                    <div className="font-[var(--font-anton)] uppercase text-2xl leading-tight text-[var(--color-kopf-bone)]">
+                      {r.rating}
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--color-kopf-bone-muted)]">
+                      {r.body}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-6 text-[var(--color-kopf-bone-muted)] text-sm leading-relaxed max-w-4xl italic">
+              Carrier is required to notify Kopf by phone and email immediately if its
+              safety rating is changed to "Unsatisfactory" or "Conditional" and stop any
+              transportation of freight in progress until notice by Kopf.
+            </p>
+          </div>
+
+          {/* Insurance */}
+          <div className="mt-14 border-t border-white/[0.08] pt-10">
+            <h3 className="kopf-eyebrow mb-6">§ Insurance</h3>
+            <ul className="space-y-4 max-w-4xl">
+              {insuranceRequirements.map((r, i) => (
+                <li key={r} className="flex gap-4 border-t border-white/[0.06] pt-3 first:border-t-0 first:pt-0">
+                  <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-orange)] min-w-[24px]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-[var(--color-kopf-bone-muted)] text-base leading-relaxed">{r}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Broker-Carrier Agreement */}
+          <div className="mt-14 border-t border-white/[0.08] pt-10">
+            <h3 className="kopf-eyebrow mb-3">§ Broker-Carrier Agreement</h3>
+            <p className="text-[var(--color-kopf-bone-muted)] text-base md:text-lg leading-relaxed max-w-4xl">
+              Contract carrier must agree to Kopf's Broker-Motor Carrier Agreement by
+              signing the document. Carrier agrees that any violation of the
+              Broker-Motor Carrier Agreement is grounds for immediate termination for
+              conducting business with the company.
+            </p>
+          </div>
+
+          {/* Other */}
+          <div className="mt-14 border-t border-white/[0.08] pt-10">
+            <h3 className="kopf-eyebrow mb-3">§ Other Qualifications</h3>
+            <p className="text-[var(--color-kopf-bone-muted)] text-base md:text-lg leading-relaxed max-w-4xl">
+              Kopf engages in other carrier qualification processes which are
+              proprietary. Kopf reserves the right to deny a carrier the ability to
+              conduct business if any or all of these qualifications are not met. Terms
+              and qualifications may be revised as deemed necessary by the company.
+            </p>
+            <ul className="mt-6 space-y-3 max-w-4xl">
+              <li className="flex gap-4">
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-orange)] min-w-[24px]">01</span>
+                <span className="text-[var(--color-kopf-bone-muted)]">
+                  No Major Complaints on File with any External Websites (ex.: TIA WatchDog, Carrier 411 or Internet Truckstop).
+                </span>
+              </li>
+              <li className="flex gap-4">
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-orange)] min-w-[24px]">02</span>
+                <span className="text-[var(--color-kopf-bone-muted)]">
+                  No Major Internal Complaints from Kopf Business Affiliates or Corporate Office.
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════ §06 DRIVER TYPES (4-icon grid) ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-y border-white/[0.05] px-6 lg:px-10 py-24 md:py-28">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            chapter="06"
+            eyebrow="Automated Carrier Onboarding"
+            title={
+              <>
+                Streamlined Process<br />
+                <span className="text-[var(--color-kopf-orange)]">for All Driver Types</span>
+              </>
+            }
+            kicker="As a new Independent Freight Agent, getting started in the industry can be challenging. However, Kopf Logistics Group can help make the transition easier by sourcing the best carriers with our streamlined carrier setup process. Our carrier setup process will help you get started and ensure compliance with all necessary regulations."
+          />
+          <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {driverTypes.map((d, i) => (
+              <div
+                key={d.label}
+                className="group relative border border-white/[0.08] bg-[var(--color-kopf-ink)] p-6 hover:border-[var(--color-kopf-orange)] transition flex flex-col items-center text-center"
+              >
+                <span className="font-[var(--font-jetbrains)] text-[10px] tabular-nums text-[var(--color-kopf-concrete)] self-start">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="mt-2 relative w-14 h-16">
+                  <Image
+                    src={`/kopf-original/images/${d.icon}`}
+                    alt=""
+                    fill
+                    sizes="56px"
+                    className="object-contain theme-icon"
+                  />
+                </div>
+                <p className="mt-4 text-[var(--color-kopf-bone)] font-[var(--font-anton)] uppercase tracking-tight text-lg">
+                  {d.label}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── REQUIREMENTS & TESTIMONIALS ── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16">
-          <div>
-            <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-              Requirements
-            </p>
-            <h2 className="text-3xl font-bold text-white mb-6">What you&apos;ll need.</h2>
-            <p className="text-stone-400 mb-6 text-sm leading-relaxed">
-              Standard requirements for all carriers in our network. If you have
-              an active authority and clean safety rating, you&apos;re likely a good
-              fit.
-            </p>
-            <div className="flex flex-col gap-3">
-              {requirements.map((req) => (
-                <div key={req} className="flex items-center gap-3 py-2.5 border-b border-stone-800">
-                  <CheckCircle className="w-4 h-4 text-orange-500 shrink-0" />
-                  <span className="text-stone-300 text-sm">{req}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-              What Carriers Say
-            </p>
-            <h2 className="text-3xl font-bold text-white mb-6">From our carriers.</h2>
-            <div className="flex flex-col gap-5">
-              {testimonials.map((t, i) => (
-                <div key={i} className="bg-stone-900 border border-stone-800 rounded-xl p-5">
-                  <div className="flex gap-1 mb-3">
-                    {Array.from({ length: t.rating }).map((_, j) => (
-                      <Star key={j} className="w-4 h-4 fill-orange-500 text-orange-500" />
-                    ))}
-                  </div>
-                  <blockquote className="text-stone-300 text-sm italic mb-3">
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <div className="border-t border-stone-800 pt-3">
-                    <p className="text-white text-sm font-medium">{t.author}</p>
-                    <p className="text-stone-500 text-xs">{t.company}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* ═══════════════ §07 FREIGHT SETTLEMENTS ═══════════════ */}
+      <section className="relative px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            chapter="07"
+            eyebrow="Cash in the Door"
+            title="Freight Settlements"
+          />
+          <div className="mt-14 grid md:grid-cols-3 gap-6">
+            {settlements.map((s, i) => (
+              <div key={s.title} className="relative border border-white/[0.08] p-8 bg-[var(--color-kopf-ink-2)]">
+                <Clock className="w-8 h-8 text-[var(--color-kopf-orange)] mb-5" strokeWidth={1.3} />
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-concrete)]">
+                  0{i + 1}
+                </span>
+                <h3 className="mt-2 font-[var(--font-anton)] uppercase text-3xl leading-none tracking-tight">
+                  {s.title}
+                </h3>
+                <p className="mt-4 text-sm leading-relaxed text-[var(--color-kopf-bone-muted)]">
+                  {s.body}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── SETUP FORM ── */}
-      <section id="setup" className="py-20 bg-stone-900/50 border-y border-stone-800">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-white mb-3">Carrier Setup Form</h2>
-            <p className="text-stone-400">
-              Submit your information and our compliance team will reach out within one
-              business day.
-            </p>
+      {/* ═══════════════ §08 JOIN CTA ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-t border-white/[0.05] px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-4xl mx-auto text-center">
+          <SectionHeader
+            chapter="08"
+            eyebrow="574.971.8182"
+            title="Join Our Carrier Network"
+            kicker="Thank you for your interest in becoming a contract carrier with Kopf Logistics Group! It's easier than ever to become a part of our robust carrier network with MyCarrierPackets.com. It simplifies the paperwork process, eliminating the need to mail or fax carrier setup packets or insurance updates. Please contact one of our friendly and helpful Carrier Representatives at 574.971.8182 to find a load that best suits your needs."
+            align="center"
+          />
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Button
+              href="https://mycarrierpackets.com/"
+              external
+              variant="solid"
+            >
+              MyCarrierPackets.com
+            </Button>
+            <Button href="/contact">Talk to a Rep</Button>
           </div>
-
-          <form
-            action="https://formspree.io/f/xqaqkqkp"
-            method="POST"
-            className="bg-stone-900 border border-stone-800 rounded-xl p-8 flex flex-col gap-5"
-          >
-            <input type="hidden" name="form_type" value="carrier_setup" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Company Name *</label>
-                <input name="company" type="text" required placeholder="ABC Trucking LLC"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors" />
-              </div>
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">MC Number *</label>
-                <input name="mc_number" type="text" required placeholder="MC-123456"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Contact Name *</label>
-                <input name="contact_name" type="text" required placeholder="John Smith"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors" />
-              </div>
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Phone *</label>
-                <input name="phone" type="tel" required placeholder="(555) 000-0000"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-stone-400 text-sm mb-1.5">Email *</label>
-              <input name="email" type="email" required placeholder="dispatch@company.com"
-                className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors" />
-            </div>
-            <div>
-              <label className="block text-stone-400 text-sm mb-1.5">Equipment Type</label>
-              <select name="equipment" className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm focus:border-orange-600 transition-colors">
-                <option value="">Select...</option>
-                <option>Dry Van</option>
-                <option>Refrigerated / Reefer</option>
-                <option>Flatbed</option>
-                <option>Step Deck</option>
-                <option>RGN / Lowboy</option>
-                <option>Tanker</option>
-                <option>Bulk / Hopper</option>
-                <option>Power Only</option>
-                <option>Multiple Types</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-stone-400 text-sm mb-1.5">Number of Trucks</label>
-              <select name="fleet_size" className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm focus:border-orange-600 transition-colors">
-                <option value="">Select...</option>
-                <option>Owner-Operator (1 truck)</option>
-                <option>2–5 trucks</option>
-                <option>6–20 trucks</option>
-                <option>21–50 trucks</option>
-                <option>50+ trucks</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-stone-400 text-sm mb-1.5">Preferred Lanes / Notes</label>
-              <textarea name="message" rows={3} placeholder="Home base, preferred regions, any notes..."
-                className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 transition-colors resize-none" />
-            </div>
-            <button type="submit"
-              className="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3.5 rounded transition-colors duration-200 flex items-center justify-center gap-2">
-              Submit Carrier Setup
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
         </div>
       </section>
     </>

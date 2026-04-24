@@ -1,386 +1,265 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import {
-  Truck,
-  Thermometer,
-  Package,
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  Shield,
-  Zap,
-  BarChart3,
-  RefreshCw,
-  ChevronRight,
-} from "lucide-react";
+import Button from "@/components/ui/Button";
+import SectionHeader from "@/components/ui/SectionHeader";
+import PhoneEmailBlock from "@/components/ui/PhoneEmailBlock";
+import { Quote } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Freight Shipping Services for Shippers | Kopf Logistics Group",
+  title: "Shippers",
   description:
-    "Truckload, temperature-controlled, open-deck, LTL & bulk transport across 48 states. Get a freight quote from Kopf Logistics Group — Elkhart, Indiana.",
+    "Customized truckload, temperature-controlled, open-deck, LTL, bulk, and power-only transportation solutions for manufacturers and distributors — from Elkhart, Indiana.",
+  alternates: { canonical: "/shippers" },
 };
 
-const services = [
-  {
-    icon: Truck,
-    title: "Truckload (FTL)",
-    description:
-      "Full truckload freight across the continental US. We source van, reefer, and flatbed capacity on your lanes — dedicated, spot, or contract. Our relationships with thousands of carrier partners mean we find the right truck at the right price.",
-    features: ["Van, reefer & flatbed options", "Spot & contract rates", "Dedicated lane management", "24/7 load tracking"],
-  },
-  {
-    icon: Thermometer,
-    title: "Temperature-Controlled",
-    description:
-      "Refrigerated and frozen freight handled with the precision it demands. From produce to pharmaceuticals, we match your commodity to food-grade, FDA-compliant carriers with continuous temp monitoring.",
-    features: ["Continuous temperature monitoring", "Food-grade equipment", "FDA-compliant carriers", "Precooling & pre-trip inspection"],
-  },
-  {
-    icon: Package,
-    title: "Open-Deck & Flatbed",
-    description:
-      "Specialized freight is our specialty. Oversized loads, heavy haul, step deck, RGN, and lowboy — we navigate permitting, route surveys, and pilot car requirements so you don't have to.",
-    features: ["Step deck & flatbed", "RGN & lowboy", "Oversize permitting", "Pilot car coordination"],
-  },
-  {
-    icon: Zap,
-    title: "LTL Shipping",
-    description:
-      "Less-than-truckload freight optimized for cost and transit time. We consolidate your LTL shipments and negotiate carrier rates based on our collective volume — savings you can't get on your own.",
-    features: ["National LTL network", "Volume-based pricing", "Shipment consolidation", "Bill of lading management"],
-  },
-  {
-    icon: BarChart3,
-    title: "Bulk Transport",
-    description:
-      "Grain, aggregate, liquid, and bulk commodity hauling with specialized equipment. Tanker, hopper, pneumatic, and dump trailer solutions for agriculture, manufacturing, and construction freight.",
-    features: ["Tanker & liquid bulk", "Dry bulk & pneumatic", "Hopper & dump trailer", "Agricultural commodities"],
-  },
-  {
-    icon: RefreshCw,
-    title: "Power Only & Drop-Trailer",
-    description:
-      "Maximize your trailer utilization with our power-only and drop-trailer programs. We provide the truck; you keep control of your equipment and loading schedule.",
-    features: ["Owner-operator power units", "Drop & hook efficiency", "Trailer interchange programs", "Flexible scheduling"],
-  },
+const provisionList = [
+  "Service Reliability",
+  "Proactive Customer Service",
+  "Accurate Invoicing & Documentation",
+  "Operational Efficiency",
+  "Scalable Technology",
+  "Stellar Reputation",
+  "Multiple Service Lanes",
+  "Dedication & Accountability",
+  "Integrity in Executing Shipper Terms",
 ];
 
-const whyKopf = [
-  {
-    icon: Shield,
-    title: "One Call, Total Coverage",
-    description:
-      "Every mode. Every lane. Stop managing multiple brokers and consolidate your freight program with a single partner who can handle it all.",
-  },
-  {
-    icon: Clock,
-    title: "24/7 Dispatch & Support",
-    description:
-      "Your freight doesn't sleep and neither do we. Our dispatch team is available around the clock for load updates, exceptions, and urgent capacity.",
-  },
-  {
-    icon: CheckCircle,
-    title: "Carrier Compliance",
-    description:
-      "Every carrier in our network is thoroughly vetted — FMCSA authority, insurance, safety ratings, and on-site inspections for high-value freight.",
-  },
-  {
-    icon: Truck,
-    title: "McLeod TMS Visibility",
-    description:
-      "Real-time visibility powered by McLeod TMS. Track your shipments, access BOLs, and pull reporting — all in one cloud-based platform.",
-  },
-];
-
-const process = [
-  { step: "01", title: "Request a Quote", description: "Tell us your freight details — origin, destination, commodity, weight, and timeline. We respond within the hour." },
-  { step: "02", title: "We Source Capacity", description: "Our team works our carrier network to find the best fit for your load — price, transit time, and equipment." },
-  { step: "03", title: "Load Confirmation", description: "You receive a rate confirmation and carrier assignment. BOL and tracking are set up immediately." },
-  { step: "04", title: "Freight Moves", description: "We monitor the load door-to-door. Any exception? You'll hear from us before you have to ask." },
+const servicesOffered = [
+  "Truckload",
+  "Temperature-Controlled",
+  "Open-Deck",
+  "Less-Than-Truckload (LTL)",
+  "Bulk Transport",
+  "Power Only",
+  "Drop-Trailer Service",
+  "Drop & Hook Service",
+  "Trailer Interchange",
+  "Owner Operator",
 ];
 
 export default function ShippersPage() {
   return (
     <>
-      {/* ── HERO ── */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.pexels.com/photos/906494/pexels-photo-906494.jpeg?auto=compress&cs=tinysrgb&w=1920&h=800&fit=crop"
-            alt="Freight warehouse and logistics operations"
-            fill
-            priority
-            className="object-cover object-center opacity-25"
+      {/* ═══════════════ HERO ═══════════════ */}
+      <section className="relative overflow-hidden isolate">
+        <Image
+          src="/kopf-original/images/shippers_bg2.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center -z-20 opacity-55"
+        />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-[var(--color-kopf-ink)] via-[var(--color-kopf-ink)]/88 to-[var(--color-kopf-ink)]/72" />
+
+        <div className="relative px-6 lg:px-10 pt-20 pb-24 md:pt-28 md:pb-32 max-w-6xl">
+          <div className="flex items-center gap-3 mb-6 kopf-fade-up">
+            <span className="kopf-chapter">§ Shippers</span>
+            <span className="h-px w-10 bg-[var(--color-kopf-orange)]" />
+            <span className="kopf-eyebrow">Manufacturers · Distributors</span>
+          </div>
+
+          <h1 className="font-[var(--font-anton)] uppercase leading-[0.9] tracking-tight text-[var(--color-kopf-bone)] text-[14vw] sm:text-7xl md:text-[7rem] lg:text-[9rem] kopf-fade-up kopf-fade-up-delay-1">
+            Shippers
+          </h1>
+
+          <p className="mt-8 max-w-3xl text-base md:text-lg leading-relaxed text-[var(--color-kopf-bone-muted)] kopf-fade-up kopf-fade-up-delay-2">
+            At Kopf Logistics Group, we work with manufacturers, distributors, and
+            shippers to provide customized transportation solutions to meet the specific
+            needs of our customers. We partner with freight carriers to ensure the best
+            possible service is provided. We offer Truckload, Temperature-Controlled,
+            Open-Deck, Less-Than-Truckload (LTL), Bulk Transport, Power Only, Drop-Trailer
+            Service, Drop & Hook Service, Trailer Interchange and Owner Operator
+            transportation services across our contract carrier network. We care about
+            delivering your quality product efficiently and safely, which is why we strive
+            to offer the best transportation solutions for our customers.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-start gap-8 kopf-fade-up kopf-fade-up-delay-3">
+            <div>
+              <span className="block kopf-eyebrow mb-3">Get Started Today!</span>
+              <PhoneEmailBlock />
+            </div>
+            <div className="flex gap-3 pt-5">
+              <Button href="#apply" variant="solid">Shipper Questionnaire</Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="tread-divider" aria-hidden="true" />
+      </section>
+
+      {/* ═══════════════ SERVICES OFFERED ═══════════════ */}
+      <section className="relative px-6 lg:px-10 py-24 md:py-28">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            chapter="01"
+            eyebrow="10 Transportation Options"
+            title="Services We Operate"
+            kicker="One contract carrier network. Ten distinct service lines — matched to the exact requirements of your freight, your schedule, and your budget."
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-stone-950/70 via-stone-950/80 to-stone-950" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-orange-600/20 border border-orange-600/40 rounded-full px-4 py-1.5 mb-6">
-              <span className="text-orange-400 text-sm font-medium">For Shippers</span>
-            </div>
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Move freight with
-              <br />
-              <span className="gradient-text">confidence.</span>
-            </h1>
-            <p className="text-xl text-stone-300 leading-relaxed mb-8">
-              Manufacturers and distributors across North America trust Kopf
-              Logistics Group to source reliable capacity, navigate complexity,
-              and deliver — every time. Every mode. Every lane.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#quote"
-                className="inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-500 text-white font-semibold px-8 py-4 rounded transition-all duration-200"
-              >
-                Get a Freight Quote
-                <ArrowRight className="w-5 h-5" />
-              </a>
-              <a
-                href="tel:5742640990"
-                className="inline-flex items-center justify-center gap-2 border border-stone-700 hover:border-stone-500 text-white font-medium px-8 py-4 rounded transition-colors duration-200"
-              >
-                Call (574) 264-0990
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SERVICES ── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-14">
-          <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-            Transportation Modes
-          </p>
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Every mode of transport, covered.
-          </h2>
-          <p className="text-stone-400 max-w-2xl mx-auto">
-            From a single pallet to a multi-stop mega-load, Kopf has the
-            carrier relationships and expertise to move any freight, anywhere in
-            the continental US.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => (
-            <div
-              key={service.title}
-              className="bg-stone-900 border border-stone-800 hover:border-orange-600/40 rounded-xl p-6 transition-all duration-300 bento-card"
-            >
-              <div className="w-10 h-10 bg-orange-600/15 rounded-lg flex items-center justify-center mb-4">
-                <service.icon className="w-5 h-5 text-orange-500" />
-              </div>
-              <h3 className="text-white font-semibold text-lg mb-3">{service.title}</h3>
-              <p className="text-stone-400 text-sm leading-relaxed mb-4">
-                {service.description}
-              </p>
-              <ul className="flex flex-col gap-2">
-                {service.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-xs text-stone-500">
-                    <CheckCircle className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── HOW IT WORKS ── */}
-      <section className="py-20 bg-stone-900/50 border-y border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-              Process
-            </p>
-            <h2 className="text-4xl font-bold text-white mb-4">
-              How it works.
-            </h2>
-            <p className="text-stone-400 max-w-xl mx-auto">
-              From your first call to final delivery, here's what working with
-              Kopf looks like.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {process.map((step, i) => (
-              <div key={step.step} className="relative">
-                {i < process.length - 1 && (
-                  <div className="hidden lg:block absolute top-6 left-full w-full h-0.5 bg-stone-800 z-0" style={{ width: "calc(100% - 48px)", left: "48px" }} />
-                )}
-                <div className="relative z-10">
-                  <div className="text-5xl font-black text-orange-600/20 mb-3">{step.step}</div>
-                  <h3 className="text-white font-semibold text-lg mb-2">{step.title}</h3>
-                  <p className="text-stone-400 text-sm leading-relaxed">{step.description}</p>
-                </div>
-              </div>
+          <ul className="mt-14 grid gap-x-10 gap-y-3 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl">
+            {servicesOffered.map((svc, i) => (
+              <li key={svc} className="flex items-baseline gap-4 border-t border-white/[0.08] pt-3">
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-concrete)]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[var(--color-kopf-bone)] font-[var(--font-anton)] uppercase tracking-tight text-lg">
+                  {svc}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* ── WHY KOPF ── */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3">
-              The Kopf Advantage
-            </p>
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Not just a broker.
-              <br />
-              <span className="gradient-text">Your logistics partner.</span>
-            </h2>
-            <p className="text-stone-400 leading-relaxed mb-8">
-              After 50+ years in freight, we've learned that shippers don't
-              just need capacity — they need a partner who understands their
-              business. Kopf assigns you a dedicated team that learns your
-              freight, your deadlines, and your customers.
-            </p>
-            <Link
-              href="/about"
-              className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-400 font-medium transition-colors"
-            >
-              Learn about Kopf <ChevronRight className="w-4 h-4" />
-            </Link>
+      {/* ═══════════════ TESTIMONIAL ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-y border-white/[0.05] px-6 lg:px-10 py-24 md:py-28">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="kopf-chapter">§ 02</span>
+            <span className="h-px w-10 bg-[var(--color-kopf-orange)]" />
+            <span className="kopf-eyebrow">What They Say</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {whyKopf.map((item) => (
-              <div
-                key={item.title}
-                className="bg-stone-900 border border-stone-800 rounded-xl p-5"
-              >
-                <div className="w-9 h-9 bg-orange-600/15 rounded-lg flex items-center justify-center mb-3">
-                  <item.icon className="w-4 h-4 text-orange-500" />
-                </div>
-                <h3 className="text-white font-semibold text-sm mb-1.5">{item.title}</h3>
-                <p className="text-stone-400 text-xs leading-relaxed">{item.description}</p>
-              </div>
-            ))}
-          </div>
+
+          <Quote className="w-14 h-14 text-[var(--color-kopf-orange)] mb-4" strokeWidth={1.2} />
+
+          <blockquote className="font-[var(--font-anton)] uppercase text-3xl md:text-5xl leading-[1.05] tracking-tight text-[var(--color-kopf-bone)] max-w-4xl">
+            "Kopf has been a time tested source for reliable transportation of our
+            materials to support production. Always prompt, efficient and courteous, a
+            pleasure to work with covering a broad spectrum of locations."
+          </blockquote>
+
+          <footer className="mt-8 flex items-center gap-4 pt-5 border-t border-white/[0.08] max-w-md">
+            <span className="block w-12 h-12 bg-[var(--color-kopf-orange)] grid place-items-center font-[var(--font-anton)] uppercase text-2xl text-[var(--color-kopf-ink)]">
+              B
+            </span>
+            <span>
+              <span className="block font-[var(--font-anton)] uppercase text-xl">Bob</span>
+              <span className="block font-[var(--font-jetbrains)] text-xs uppercase tracking-[0.22em] text-[var(--color-kopf-concrete)]">
+                RV Industry
+              </span>
+            </span>
+          </footer>
         </div>
       </section>
 
-      {/* ── QUOTE FORM ── */}
-      <section id="quote" className="py-20 bg-stone-900/50 border-y border-stone-800">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-white mb-3">Request a Freight Quote</h2>
-            <p className="text-stone-400">
-              Fill out the form below and a Kopf logistics specialist will
-              respond within one business hour.
-            </p>
+      {/* ═══════════════ WHY ELKHART? (Location) ═══════════════ */}
+      <section className="relative px-6 lg:px-10 py-24 md:py-28">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-5">
+            <SectionHeader
+              chapter="03"
+              eyebrow="The RV Capital Advantage"
+              title={
+                <>
+                  Shippers Served<br />
+                  <span className="text-[var(--color-kopf-orange)]">Nationwide</span>
+                </>
+              }
+            />
           </div>
+          <div className="lg:col-span-7 space-y-6 text-base md:text-lg leading-relaxed" style={{ color: "var(--text-muted)" }}>
+            <p>
+              We are committed to understanding our customer&apos;s freight and offer superior
+              customer service with each delivery. Our location is a major benefit to our
+              customers, allowing Kopf to dispatch its equipment quickly to all regions of
+              the country.
+            </p>
+            <p>
+              Kopf&apos;s main truck terminal is located in Elkhart County, Indiana, &ldquo;the RV
+              Capital of the World.&rdquo; Several interstate highways crisscross in
+              Indianapolis and connect our state to the rest of the United States. Kopf
+              operates two additional truck terminals. Our terminal in Seaford, Delaware
+              allows us to service Northeast lanes. Our terminal in Athens, Georgia allows
+              us to service Southeast lanes.
+            </p>
 
-          <form
-            action="https://formspree.io/f/xqaqkqkp"
-            method="POST"
-            className="bg-stone-900 border border-stone-800 rounded-xl p-8 flex flex-col gap-5"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Full Name *</label>
-                <input
-                  name="name"
-                  type="text"
-                  required
-                  placeholder="Jane Smith"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Company *</label>
-                <input
-                  name="company"
-                  type="text"
-                  required
-                  placeholder="Acme Manufacturing"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Email *</label>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="jane@company.com"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Phone</label>
-                <input
-                  name="phone"
-                  type="tel"
-                  placeholder="(555) 000-0000"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Origin (City, State)</label>
-                <input
-                  name="origin"
-                  type="text"
-                  placeholder="Chicago, IL"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-stone-400 text-sm mb-1.5">Destination (City, State)</label>
-                <input
-                  name="destination"
-                  type="text"
-                  placeholder="Dallas, TX"
-                  className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-stone-400 text-sm mb-1.5">Freight Type / Commodity</label>
-              <select
-                name="freight_type"
-                className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm focus:border-orange-600 focus:ring-0 transition-colors"
-              >
-                <option value="">Select a mode...</option>
-                <option>Truckload (FTL)</option>
-                <option>LTL</option>
-                <option>Temperature-Controlled / Reefer</option>
-                <option>Flatbed / Open-Deck</option>
-                <option>Bulk / Tanker</option>
-                <option>Power Only / Drop-Trailer</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-stone-400 text-sm mb-1.5">Additional Details</label>
-              <textarea
-                name="message"
-                rows={4}
-                placeholder="Commodity, weight, pickup date, special requirements..."
-                className="w-full bg-stone-950 border border-stone-700 rounded px-4 py-2.5 text-white text-sm placeholder-stone-600 focus:border-orange-600 focus:ring-0 transition-colors resize-none"
+            <div className="relative aspect-[16/9] overflow-hidden mt-6">
+              <Image
+                src="/pexels/loading_dock2.jpg"
+                alt="Kopf shipper loading dock operations"
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
               />
             </div>
-            <button
-              type="submit"
-              className="w-full bg-orange-600 hover:bg-orange-500 text-white font-semibold py-3.5 rounded transition-colors duration-200 flex items-center justify-center gap-2"
-            >
-              Submit Quote Request
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <p className="text-stone-600 text-xs text-center">
-              We respond within 1 business hour. Or call us directly at (574) 264-0990.
-            </p>
-          </form>
+
+            <div className="grid sm:grid-cols-3 gap-4 pt-6">
+              {[
+                { city: "Elkhart, IN", label: "HQ · RV Capital" },
+                { city: "Athens, GA", label: "Southeast Lanes" },
+                { city: "Seaford, DE", label: "Northeast Lanes" },
+              ].map((t) => (
+                <div key={t.city} className="border-l-2 pl-4 py-2" style={{ borderColor: "var(--accent)" }}>
+                  <div className="font-[var(--font-anton)] uppercase text-lg leading-tight" style={{ color: "var(--text)" }}>
+                    {t.city}
+                  </div>
+                  <div className="mt-1 font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em]" style={{ color: "var(--text-concrete)" }}>
+                    {t.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════ PROVISION (9 items) ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-y border-white/[0.05] px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeader
+            chapter="04"
+            eyebrow="Provision"
+            title="We Provide What Shippers Want"
+          />
+          <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {provisionList.map((item, i) => (
+              <li
+                key={item}
+                className="group relative border border-white/[0.08] bg-[var(--color-kopf-ink)]/60 p-6 hover:border-[var(--color-kopf-orange)]/70 transition"
+              >
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums text-[var(--color-kopf-concrete)] group-hover:text-[var(--color-kopf-orange)] transition">
+                  0{i + 1}
+                </span>
+                <p className="mt-3 text-[var(--color-kopf-bone)] text-lg leading-snug font-[var(--font-anton)] uppercase tracking-tight">
+                  {item}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ═══════════════ APPLY (Form link) ═══════════════ */}
+      <section id="apply" className="relative px-6 lg:px-10 py-24 md:py-32">
+        <div className="max-w-4xl mx-auto text-center">
+          <SectionHeader
+            chapter="05"
+            eyebrow="Confidential Questionnaire"
+            title="Apply Now"
+            kicker="The information obtained from this questionnaire is kept strictly confidential and will not be shared. Our team will follow up within one business day."
+            align="center"
+          />
+
+          <div className="mt-10 inline-flex flex-col gap-6 items-center">
+            <PhoneEmailBlock align="center" />
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button
+                href="https://kopflogisticsgroup.com/shippers/#apply"
+                external
+                variant="solid"
+              >
+                Start Shipper Questionnaire
+              </Button>
+              <Button href="/contact">Contact Our Team</Button>
+            </div>
+          </div>
+
+          <p className="mt-10 text-xs font-[var(--font-jetbrains)] uppercase tracking-[0.22em] text-[var(--color-kopf-concrete)]">
+            By providing a telephone number and submitting this form you are consenting to
+            be contacted by SMS text message. Message & data rates may apply.
+          </p>
         </div>
       </section>
     </>

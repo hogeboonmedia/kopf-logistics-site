@@ -1,0 +1,211 @@
+# Sveltia CMS configuration for Kopf Logistics Group
+# Docs: https://github.com/sveltia/sveltia-cms
+
+# ─────────────────────────────────────────────────
+# Backend — GitHub via our OAuth proxy
+#
+# `base_url` is set to the Vercel preview domain. When the site is cut over to
+# the production domain, update this line to `https://kopflogisticsgroup.com`.
+# (Sveltia's default for `base_url` is api.netlify.com, which would try to use
+# Netlify's OAuth proxy — that's not what we want since we host our own.)
+# ─────────────────────────────────────────────────
+backend:
+  name: github
+  repo: hogeboonmedia/kopf-logistics-site
+  branch: main
+  base_url: https://kopf-logistics-site.vercel.app
+  auth_endpoint: api/admin/auth
+  commit_messages:
+    create: 'content: add "{{slug}}"'
+    update: 'content: update "{{slug}}"'
+    delete: 'content: delete "{{slug}}"'
+    uploadMedia: 'media: upload {{path}}'
+    deleteMedia: 'media: remove {{path}}'
+
+# ─────────────────────────────────────────────────
+# Site URLs (used for "View Live" buttons in the editor).
+# Pointing these to the production domain is fine even during testing —
+# the only effect is that "View Live" links won't work until the production
+# domain is connected.
+# ─────────────────────────────────────────────────
+site_url: https://kopflogisticsgroup.com
+display_url: https://kopflogisticsgroup.com
+logo_url: /kopf-original/images/kopf_orangelogo_no_bg_02.png
+
+# ─────────────────────────────────────────────────
+# Media — global default. Overridden per-collection below to
+# co-locate post images with their YYYY/MM folder.
+# ─────────────────────────────────────────────────
+media_folder: public/blog-images/uploads
+public_folder: /blog-images/uploads
+
+# ─────────────────────────────────────────────────
+# Editorial workflow — drafts go to a PR before merging.
+# Disabled for now (Marissa publishes directly), but easy to enable later
+# by uncommenting the next line.
+# ─────────────────────────────────────────────────
+# publish_mode: editorial_workflow
+
+# ─────────────────────────────────────────────────
+# Custom navigation — links to the comment moderation,
+# inquiries dashboard, and blocklists (built in Phase 3).
+# Sveltia renders these as external-link items in the sidebar.
+# ─────────────────────────────────────────────────
+extra_links:
+  - label: Moderate Comments
+    url: /admin/moderate/
+  - label: Contact Inquiries
+    url: /admin/inquiries/
+  - label: Blocklists
+    url: /admin/blocklists/
+
+# ─────────────────────────────────────────────────
+# Collections
+# ─────────────────────────────────────────────────
+collections:
+  - name: blog
+    label: Blog Posts
+    label_singular: Blog Post
+    folder: content/blog
+    # Path template — Sveltia derives {{year}} and {{month}} from the
+    # `date` field automatically. New posts go to content/blog/YYYY/MM/.
+    path: '{{year}}/{{month}}/{{slug}}'
+    extension: mdx
+    format: frontmatter
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    # Per-collection media folder so images upload alongside the post:
+    # public/blog-images/2026/04/<filename> → /blog-images/2026/04/<filename>
+    media_folder: '/public/blog-images/{{year}}/{{month}}'
+    public_folder: '/blog-images/{{year}}/{{month}}'
+    # Identifier for the slug widget — what Sveltia uses when computing the slug
+    identifier_field: title
+    # Default sort
+    sortable_fields: [date, title]
+    view_filters:
+      - label: Drafts
+        field: draft
+        pattern: true
+      - label: Published
+        field: draft
+        pattern: false
+    fields:
+      - name: title
+        label: Title
+        widget: string
+        required: true
+        hint: Headline for the post. Also used as the H1 on the post page.
+
+      - name: metaTitle
+        label: SEO Meta Title (optional)
+        widget: string
+        required: false
+        hint: 'Override the <title> tag if different from headline. ~60 chars max.'
+
+      - name: description
+        label: Meta Description / Standfirst
+        widget: text
+        required: true
+        pattern: ['^.{50,200}$', 'Aim for 50–200 characters for best SEO + social sharing.']
+        hint: Shown on the blog index card, in Google search results, and as the social share preview.
+
+      - name: date
+        label: Publish Date
+        widget: datetime
+        required: true
+        date_format: 'YYYY-MM-DD'
+        time_format: 'HH:mm'
+        format: 'YYYY-MM-DDTHH:mm:ssZ'
+        hint: Future dates schedule the post — it won't appear until that date.
+
+      - name: slug
+        label: URL Slug
+        widget: string
+        required: true
+        pattern: ['^[a-z0-9-]+$', 'Lowercase letters, numbers, and dashes only — no spaces.']
+        hint: 'Becomes the URL: kopflogisticsgroup.com/YYYY/MM/<slug>/'
+
+      - name: category
+        label: Primary Category
+        widget: select
+        options:
+          - { label: Freight Agents, value: freight-agents }
+          - { label: Freight Brokers, value: freight-brokers }
+          - { label: Kopf Logistics Group, value: kopf-logistics-group }
+          - { label: Transportation Industry, value: transportation-industry }
+          - { label: Truck Drivers, value: truck-drivers }
+          - { label: Uncategorized, value: uncategorized }
+        required: true
+        default: freight-agents
+
+      - name: categories
+        label: All Categories (for cross-listing)
+        widget: list
+        required: false
+        default: []
+        field:
+          name: category
+          widget: select
+          options:
+            - { label: Freight Agents, value: freight-agents }
+            - { label: Freight Brokers, value: freight-brokers }
+            - { label: Kopf Logistics Group, value: kopf-logistics-group }
+            - { label: Transportation Industry, value: transportation-industry }
+            - { label: Truck Drivers, value: truck-drivers }
+
+      - name: tags
+        label: Tags (optional, for related-post matching)
+        widget: list
+        required: false
+        default: []
+        hint: Free-form tags. Helps surface related posts at the bottom of each article.
+
+      - name: author
+        label: Author
+        widget: select
+        options:
+          - { label: Marissa, value: marissa }
+          - { label: Jason Hogeboon, value: 'Jason Hogeboon' }
+          - { label: Howard Smith, value: howard@kopflogisticsgroup.com }
+          - { label: Jeanie Northcutt, value: jeanie@kopflogisticsgroup.com }
+        default: marissa
+        required: true
+
+      - name: featuredImage
+        label: Featured Image
+        widget: image
+        required: false
+        hint: 'At least 1200×630 px for clean social sharing. Drag-drop here.'
+
+      - name: featuredImageAlt
+        label: Featured Image Alt Text
+        widget: string
+        required: false
+        hint: For screen readers and SEO. Describe what's in the image.
+
+      - name: canonical
+        label: Canonical URL (optional)
+        widget: string
+        required: false
+        hint: Only set if this post is a republish of content that lives somewhere else.
+
+      - name: draft
+        label: Draft (don't publish)
+        widget: boolean
+        required: false
+        default: false
+        hint: Check this to keep the post out of the public list while you work on it.
+
+      - name: wpId
+        label: WordPress Post ID (legacy)
+        widget: hidden
+        required: false
+
+      - name: body
+        label: Post Body
+        widget: markdown
+        required: true
+        modes: [rich_text, raw]
+        sanitize_preview: false
+        hint: 'Use the rich-text editor for normal writing, or switch to "Raw" mode to paste HTML.'

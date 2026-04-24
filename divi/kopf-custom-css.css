@@ -1,0 +1,425 @@
+/* ═══════════════════════════════════════════════════════════════
+   KOPF LOGISTICS GROUP — Divi Custom CSS
+   Paste into: WP Admin → Divi → Theme Options → General → Custom CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Load fonts (Anton + JetBrains Mono not available in Divi's default pickers).
+   Divi → Theme Customizer → General Settings → Typography → Body/Header Font
+   picks up whatever Google Fonts are loaded. */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital@1&display=swap');
+
+:root {
+  --kopf-ink: #0F0B08;
+  --kopf-ink-2: #17110C;
+  --kopf-bone: #F5EFE6;
+  --kopf-bone-muted: #D6CFC3;
+  --kopf-orange: #EA580C;
+  --kopf-orange-deep: #B8410B;
+  --kopf-steel: #2B2420;
+  --kopf-concrete: #8A8075;
+}
+
+/* ========== Global tone ========== */
+
+body,
+body.et_pb_pagebuilder_layout {
+  background: var(--kopf-ink);
+  color: var(--kopf-bone);
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Anton', sans-serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.95 !important;
+  color: var(--kopf-bone);
+}
+
+/* ========== Distinctive "Chapter Mark" header ========== */
+.kopf-chapter-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.kopf-chapter-mark .num { color: var(--kopf-concrete); }
+.kopf-chapter-mark .bar {
+  display: inline-block;
+  width: 40px;
+  height: 1px;
+  background: var(--kopf-orange);
+}
+.kopf-chapter-mark .eyebrow { color: var(--kopf-orange); font-weight: 500; }
+
+/* Alt for light sections */
+.kopf-chapter-mark.on-light .num { color: #8A7A6A; }
+.kopf-chapter-mark.on-accent .num,
+.kopf-chapter-mark.on-accent .eyebrow { color: var(--kopf-ink); }
+.kopf-chapter-mark.on-accent .bar { background: var(--kopf-ink); }
+
+/* ========== Hard-edge CTA buttons (override Divi defaults) ========== */
+.et_pb_button.kopf-btn,
+.kopf-btn .et_pb_button {
+  padding: 14px 28px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase;
+  border-radius: 0 !important;
+  border-width: 2px !important;
+  transition: all 200ms ease !important;
+}
+.et_pb_button.kopf-btn:hover,
+.kopf-btn .et_pb_button:hover {
+  padding: 14px 28px !important;  /* Divi adds arrow padding on hover; cancel it */
+}
+.et_pb_button.kopf-btn:after,
+.kopf-btn .et_pb_button:after {
+  display: none !important;  /* kill the default Divi arrow */
+}
+
+/* Solid orange button (primary) */
+.kopf-btn-solid .et_pb_button,
+.et_pb_button.kopf-btn-solid {
+  background: var(--kopf-orange) !important;
+  border-color: var(--kopf-orange) !important;
+  color: var(--kopf-ink) !important;
+}
+.kopf-btn-solid .et_pb_button:hover,
+.et_pb_button.kopf-btn-solid:hover {
+  background: var(--kopf-bone) !important;
+  border-color: var(--kopf-bone) !important;
+  color: var(--kopf-ink) !important;
+}
+
+/* Outlined button (secondary) */
+.kopf-btn-outline .et_pb_button,
+.et_pb_button.kopf-btn-outline {
+  background: transparent !important;
+  border-color: var(--kopf-bone) !important;
+  color: var(--kopf-bone) !important;
+}
+.kopf-btn-outline .et_pb_button:hover,
+.et_pb_button.kopf-btn-outline:hover {
+  background: var(--kopf-orange) !important;
+  border-color: var(--kopf-orange) !important;
+  color: var(--kopf-ink) !important;
+}
+
+/* ========== Feature pill (hero list items) ========== */
+.kopf-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid rgba(245, 239, 230, 0.15);
+  background: rgba(23, 17, 12, 0.5);
+  backdrop-filter: blur(6px);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kopf-bone);
+}
+.kopf-pill::before {
+  content: "✓";
+  color: var(--kopf-orange);
+  font-weight: 700;
+}
+
+/* ========== Numbered list items (Advantage grid, Tools list, etc.) ========== */
+.kopf-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(245, 239, 230, 0.12);
+  margin-bottom: 0;
+}
+.kopf-list-item .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--kopf-concrete);
+  min-width: 28px;
+}
+.kopf-list-item .label {
+  font-size: 16px;
+  color: var(--kopf-bone);
+}
+
+.kopf-numbered-card {
+  padding: 24px;
+  border: 1px solid rgba(245, 239, 230, 0.12);
+  background: rgba(23, 17, 12, 0.6);
+  transition: border-color 200ms ease;
+}
+.kopf-numbered-card:hover {
+  border-color: var(--kopf-orange);
+}
+.kopf-numbered-card .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--kopf-concrete);
+}
+.kopf-numbered-card h3 {
+  font-family: 'Anton', sans-serif;
+  font-size: 20px;
+  line-height: 1.1;
+  margin-top: 12px;
+  color: var(--kopf-bone);
+  text-transform: uppercase;
+}
+
+/* ========== Tire-tread divider ========== */
+.kopf-tread-divider {
+  height: 26px;
+  background-image:
+    linear-gradient(135deg, transparent 45%, var(--kopf-orange) 45%, var(--kopf-orange) 55%, transparent 55%),
+    linear-gradient(45deg, transparent 45%, var(--kopf-orange) 45%, var(--kopf-orange) 55%, transparent 55%);
+  background-size: 18px 18px;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+/* ========== Hero large stat number ========== */
+.kopf-big-num {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(5rem, 16vw, 10rem);
+  line-height: 0.9;
+  color: var(--kopf-ink);
+  opacity: 0.22;
+  letter-spacing: -0.02em;
+}
+
+/* ========== Scripture pull-quote ========== */
+.kopf-scripture {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  color: var(--kopf-bone);
+  line-height: 1.25;
+}
+.kopf-scripture-cite {
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 11px;
+  color: var(--kopf-orange);
+  margin-top: 16px;
+}
+
+/* ========== Testimonials Marquee ========== */
+.kopf-reviews-wrap {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 0;
+}
+.kopf-reviews-wrap::before,
+.kopf-reviews-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.kopf-reviews-wrap::before { left: 0; background: linear-gradient(to right, var(--kopf-ink-2), transparent); }
+.kopf-reviews-wrap::after  { right: 0; background: linear-gradient(to left, var(--kopf-ink-2), transparent); }
+
+.kopf-reviews-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: kopf-marquee-scroll 55s linear infinite;
+}
+.kopf-reviews-track:hover { animation-play-state: paused; }
+.kopf-reviews-track.reverse {
+  animation-direction: reverse;
+  animation-duration: 70s;
+}
+
+@keyframes kopf-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.kopf-review {
+  flex-shrink: 0;
+  width: 360px;
+  padding: 28px;
+  background: var(--kopf-ink-2);
+  border: 1px solid rgba(245, 239, 230, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.kopf-review-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.kopf-review-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.kopf-review-initials {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--kopf-orange);
+  color: var(--kopf-ink);
+  font-family: 'Anton', sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+.kopf-review-name {
+  font-family: 'Anton', sans-serif;
+  text-transform: uppercase;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--kopf-bone);
+}
+.kopf-review-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--kopf-concrete);
+  margin-top: 4px;
+}
+.kopf-review-stars {
+  color: var(--kopf-orange);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.kopf-review-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--kopf-bone-muted);
+  flex: 1;
+}
+.kopf-google-g {
+  width: 22px;
+  height: 22px;
+  opacity: 0.85;
+}
+
+/* Review summary bar */
+.kopf-review-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding-top: 28px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(245, 239, 230, 0.12);
+  font-family: 'JetBrains Mono', monospace;
+}
+.kopf-review-summary .rating {
+  font-family: 'Anton', sans-serif;
+  font-size: 32px;
+  color: var(--kopf-bone);
+  line-height: 1;
+}
+.kopf-review-summary .rating small {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--kopf-bone-muted);
+  margin-left: 6px;
+}
+.kopf-review-summary .count {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--kopf-bone-muted);
+}
+
+/* ========== Service icon filter (make black PNGs white) ========== */
+.kopf-service-icon img {
+  filter: brightness(0) invert(1);
+  transition: filter 220ms ease;
+}
+.kopf-service-icon:hover img {
+  filter: brightness(0) saturate(100%) invert(41%) sepia(99%) saturate(1352%) hue-rotate(5deg) brightness(92%) contrast(96%);
+}
+
+/* ========== Section rule with orange accent block ========== */
+.kopf-rule {
+  position: relative;
+  height: 1px;
+  background: rgba(245, 239, 230, 0.18);
+  margin: 0;
+}
+.kopf-rule::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 56px;
+  height: 6px;
+  background: var(--kopf-orange);
+}
+
+/* ========== Offset-frame hero graphic ========== */
+.kopf-framed {
+  position: relative;
+  padding: 28px;
+}
+.kopf-framed::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 28px;
+  bottom: 28px;
+  border: 1px solid rgba(234, 88, 12, 0.5);
+  pointer-events: none;
+}
+.kopf-framed img {
+  position: relative;
+  z-index: 1;
+  background: var(--kopf-steel);
+}
+
+/* ========== Fix Divi: hide built-in blurb icon bg circle, allow full-bleed ========== */
+.kopf-flat-blurb .et_pb_main_blurb_image {
+  background: transparent !important;
+}
+.kopf-flat-blurb .et_pb_main_blurb_image .et-pb-icon {
+  color: var(--kopf-orange) !important;
+  background: transparent !important;
+}
+
+/* ========== Fade-up animation for scroll reveals ========== */
+@keyframes kopf-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.kopf-reveal {
+  animation: kopf-fade-up 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kopf-reviews-track,
+  .kopf-reveal { animation: none !important; }
+}
+
+/* ========== Mobile tweaks ========== */
+@media (max-width: 768px) {
+  .kopf-review { width: 280px; padding: 20px; }
+  .kopf-framed::before { display: none; }
+}
