@@ -128,11 +128,12 @@ export default function AboutPage() {
           <div className="lg:col-span-7">
             <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/pexels/truck_sunset_alt.jpg"
-                alt="Semi truck driving at sunset — the Kopf story"
+                src="/kopf-photos/about/freightliner-cascadia-truck-loading-dock-sunset.jpg"
+                alt="Kopf Logistics Freightliner Cascadia sleeper truck parked at warehouse loading dock at sunset"
                 fill
                 sizes="(max-width: 1024px) 100vw, 55vw"
                 className="object-cover"
+                quality={85}
               />
               <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
                 <span className="kopf-eyebrow" style={{ color: "var(--on-accent)" }}>Since</span>

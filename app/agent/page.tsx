@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
 import PhoneEmailBlock from "@/components/ui/PhoneEmailBlock";
 import VideoEmbed from "@/components/ui/VideoEmbed";
+import AgentApplicationForm from "@/components/sections/AgentApplicationForm";
 import { Check } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -349,29 +350,22 @@ export default function AgentPage() {
         </div>
       </section>
 
-      {/* §07 APPLY */}
+      {/* §07 APPLY — embedded form, replaces external WP redirect */}
       <section id="apply" className="relative px-6 lg:px-10 py-24 md:py-32">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto">
           <SectionHeader
             chapter="07"
             eyebrow="Confidential · Weekly Pay"
             title="Apply Now"
-            kicker="The information obtained from this questionnaire is kept strictly confidential and will not be shared. Weekly commission settlement paid upon billing with clean paperwork."
-            align="center"
+            kicker="The information you submit is kept strictly confidential and will not be shared. Weekly commission settlement is paid upon billing with clean paperwork."
           />
 
-          <div className="mt-10 inline-flex flex-col gap-6 items-center">
-            <PhoneEmailBlock align="center" />
-            <div className="flex flex-wrap justify-center gap-3">
-              <Button
-                href="https://kopflogisticsgroup.com/agent/#apply"
-                external
-                variant="solid"
-              >
-                Start Agent Application
-              </Button>
-              <Button href="/contact">Contact Recruiting</Button>
-            </div>
+          <AgentApplicationForm
+            turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          />
+
+          <div className="mt-10 pt-8" style={{ borderTop: "1px solid var(--hairline)" }}>
+            <PhoneEmailBlock />
           </div>
         </div>
       </section>

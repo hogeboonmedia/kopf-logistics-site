@@ -13,6 +13,14 @@
   --color-kopf-rust: #C2410C;
   --color-kopf-concrete: #8A8075;
   --color-kopf-navy: #0A1628;
+  /* Brand blue from the original Kopf WP site (#005FAE family).
+   * Used as a SECONDARY accent — orange remains primary. Applied to:
+   *   - The "§" chapter glyph that prefixes section headers
+   *   - Form field eyebrow labels + required asterisks
+   *   - Form input focus outlines
+   * Light + dark modes share the same value (per design call). */
+  --color-kopf-blue: #015EAD;
+  --color-kopf-blue-bright: #1E7DC9;
 
   --font-display: var(--font-anton);
   --font-body: var(--font-inter);
@@ -44,6 +52,9 @@
   --selection-fg: var(--color-kopf-ink);
   --focus: var(--color-kopf-orange);
   --on-accent: var(--color-kopf-ink);
+  --accent-2: var(--color-kopf-blue);
+  --accent-2-strong: var(--color-kopf-blue-bright);
+  --focus-form: var(--color-kopf-blue);
   --photo-overlay: linear-gradient(135deg, rgba(15, 11, 8, 0.72), rgba(15, 11, 8, 0.45));
   color-scheme: dark;
 }
@@ -67,6 +78,9 @@
   --selection-fg: #FFFBF4;
   --focus: #C2410C;
   --on-accent: #FFFBF4;
+  --accent-2: var(--color-kopf-blue);
+  --accent-2-strong: var(--color-kopf-blue-bright);
+  --focus-form: var(--color-kopf-blue);
   --photo-overlay: linear-gradient(135deg, rgba(251, 247, 240, 0.65), rgba(251, 247, 240, 0.25));
   color-scheme: light;
 
@@ -169,6 +183,45 @@
   letter-spacing: 0.1em;
   color: var(--text-concrete);
   font-variant-numeric: tabular-nums;
+  /* `display: inline-block` is required for ::first-letter to apply on
+   * inline elements. The first character of every .kopf-chapter is the §
+   * glyph — we color it with the secondary brand blue for editorial rhythm. */
+  display: inline-block;
+}
+.kopf-chapter::first-letter {
+  color: var(--accent-2);
+  /* Slightly heavier weight so the glyph reads as a deliberate mark
+   * even at small chapter-text sizes. */
+  font-weight: 600;
+}
+
+/* ───────────────────────────────────────────────
+ * Form-scoped variants — used inside <KopfFormShell>.
+ * Field labels render the secondary blue (vs the orange used for
+ * page-level eyebrows); required asterisks pop in the same blue.
+ * Focus outline on text inputs / selects / textareas also turns blue
+ * — orange stays reserved for the primary CTA (submit button).
+ * ─────────────────────────────────────────────── */
+.kopf-form-eyebrow {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent-2);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.kopf-required {
+  color: var(--accent-2);
+  font-weight: 600;
+  /* Slight nudge so the asterisk sits visually balanced next to the label */
+  margin-left: 0.05em;
+}
+.kopf-form-input:focus,
+.kopf-form-input:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: -1px;
+  border-color: var(--accent-2) !important;
 }
 
 .tread-divider {
@@ -251,8 +304,14 @@
   inset: 0;
   pointer-events: none;
   opacity: 0.05;
+  /* `mix-blend-mode: overlay` makes each paint an extra GPU read. Effect is
+   * barely visible at 5% opacity on mobile anyway, so hide entirely <md. */
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 768px) {
+  .kopf-grain { display: none; }
 }
 
 /* Soft photo overlay for hero/section backgrounds */

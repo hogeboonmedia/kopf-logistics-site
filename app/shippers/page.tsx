@@ -3,6 +3,7 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
 import PhoneEmailBlock from "@/components/ui/PhoneEmailBlock";
+import ShipperInquiryForm from "@/components/sections/ShipperInquiryForm";
 import { Quote } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -233,33 +234,19 @@ export default function ShippersPage() {
 
       {/* ═══════════════ APPLY (Form link) ═══════════════ */}
       <section id="apply" className="relative px-6 lg:px-10 py-24 md:py-32">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto">
           <SectionHeader
             chapter="05"
             eyebrow="Confidential Questionnaire"
-            title="Apply Now"
-            kicker="The information obtained from this questionnaire is kept strictly confidential and will not be shared. Our team will follow up within one business day."
-            align="center"
+            title="Request a Quote"
+            kicker="Tell us about your business — contact, DUNS, address, and the nature of what you ship. The information is kept strictly confidential and never shared. Our dispatch team follows up within one business day."
           />
-
-          <div className="mt-10 inline-flex flex-col gap-6 items-center">
-            <PhoneEmailBlock align="center" />
-            <div className="flex flex-wrap justify-center gap-3">
-              <Button
-                href="https://kopflogisticsgroup.com/shippers/#apply"
-                external
-                variant="solid"
-              >
-                Start Shipper Questionnaire
-              </Button>
-              <Button href="/contact">Contact Our Team</Button>
-            </div>
+          <ShipperInquiryForm
+            turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          />
+          <div className="mt-10 pt-8" style={{ borderTop: "1px solid var(--hairline)" }}>
+            <PhoneEmailBlock />
           </div>
-
-          <p className="mt-10 text-xs font-[var(--font-jetbrains)] uppercase tracking-[0.22em] text-[var(--color-kopf-concrete)]">
-            By providing a telephone number and submitting this form you are consenting to
-            be contacted by SMS text message. Message & data rates may apply.
-          </p>
         </div>
       </section>
     </>

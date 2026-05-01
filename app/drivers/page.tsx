@@ -3,6 +3,7 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
 import PhoneEmailBlock from "@/components/ui/PhoneEmailBlock";
+import DriverApplicationForm from "@/components/sections/DriverApplicationForm";
 import { Check } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -160,11 +161,12 @@ export default function DriversPage() {
           <div className="lg:col-span-7 relative">
             <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/pexels/driver_cab.jpg"
-                alt="Kopf truck driver in cab"
+                src="/kopf-photos/drivers/truck-driver-cab-warehouse-loading.jpg"
+                alt="Kopf Logistics truck driver maneuvering tractor at warehouse loading dock"
                 fill
                 sizes="(max-width: 1024px) 100vw, 55vw"
                 className="object-cover"
+                quality={80}
               />
             </div>
             <div className="absolute -bottom-6 left-6 md:left-auto md:-right-6 px-6 py-4 font-[var(--font-jetbrains)] tabular-nums" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
@@ -390,26 +392,18 @@ export default function DriversPage() {
 
       {/* §09 JOIN US TODAY */}
       <section id="apply" className="relative px-6 lg:px-10 py-24 md:py-32">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto">
           <SectionHeader
             chapter="09"
             eyebrow="CDL-A Careers"
-            title="Join Us Today"
-            kicker="Kopf Logistics Group's nationwide driving opportunities for company drivers and owner operators are ideal for those looking to advance their careers in the transportation industry. With diverse services and benefits and a commitment to safety and driver satisfaction, we stand out as a top choice for CDL-A jobs and trucking opportunities. Joining Kopf Logistics Group means becoming part of a team that values your skills, experience, and dedication. Whether you're a company driver or an owner operator, you can expect a rewarding career with a company prioritizing your success and well-being. So take the next step in your trucking career and explore the exciting opportunities at Kopf Logistics Group."
-            align="center"
+            title="Apply Now"
+            kicker="Joining Kopf means becoming part of a team that values your skills, experience, and dedication. Tell us about your background and we'll have our recruiting team reach out within one business day."
           />
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Button
-              href="https://kopflogisticsgroup.com/drivers/#apply"
-              external
-              variant="solid"
-            >
-              Apply Now
-            </Button>
-            <Button href="/contact">Talk to Recruiting</Button>
-          </div>
-          <div className="mt-8 flex justify-center">
-            <PhoneEmailBlock align="center" />
+          <DriverApplicationForm
+            turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          />
+          <div className="mt-10 pt-8" style={{ borderTop: "1px solid var(--hairline)" }}>
+            <PhoneEmailBlock />
           </div>
         </div>
       </section>
