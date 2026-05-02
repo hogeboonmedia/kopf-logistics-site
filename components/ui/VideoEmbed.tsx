@@ -48,7 +48,17 @@ export default function VideoEmbed({ youTubeId, title, aspect = "16/9" }: Props)
         }}
         unoptimized
       />
-      <span className="absolute inset-0 bg-gradient-to-br from-[var(--color-kopf-ink)]/80 via-[var(--color-kopf-ink)]/30 to-transparent" />
+      {/* Two-layer overlay for readability, same pattern YouTube/Netflix use:
+        * (1) A very subtle full-thumbnail dim so the centered Play button has
+        *     consistent contrast against any thumbnail color.
+        * (2) A bottom-up dark gradient covering roughly the lower half, which
+        *     guarantees the title sits on a dark backdrop no matter what the
+        *     YouTube thumbnail happens to contain. */}
+      <span className="absolute inset-0 bg-black/15" aria-hidden="true" />
+      <span
+        className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-black/85 via-black/50 to-transparent"
+        aria-hidden="true"
+      />
       <span className="absolute inset-0 grid place-items-center">
         <span className="relative">
           <span className="absolute inset-0 rounded-full bg-[var(--color-kopf-orange)] scale-110 blur-xl opacity-50 group-hover:opacity-75 transition" />
@@ -59,7 +69,10 @@ export default function VideoEmbed({ youTubeId, title, aspect = "16/9" }: Props)
       </span>
       <span className="absolute bottom-6 left-6 right-6 text-left">
         <span className="block kopf-eyebrow mb-1">▶ Play Video</span>
-        <span className="block text-[var(--color-kopf-bone)] text-lg md:text-xl font-[var(--font-anton)] uppercase tracking-tight leading-tight">
+        <span
+          className="block text-[var(--color-kopf-bone)] text-lg md:text-xl font-[var(--font-anton)] uppercase tracking-tight leading-tight"
+          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
+        >
           {title}
         </span>
       </span>

@@ -41,3 +41,26 @@ export function getClient() {
   if (!_sql) _sql = neon(url);
   return _sql;
 }
+
+/**
+ * Run a raw SQL query with positional parameters (e.g. `$1`, `$2`).
+ *
+ * Use this when you need to compose dynamic WHERE clauses — e.g. the admin
+ * inquiries dashboard where the filter set is variable. For typical queries
+ * with fixed shape, prefer the `sql` tagged template (sanitizes inputs by
+ * default).
+ */
+export async function query<T = Record<string, unknown>>(
+  text: string,
+  params: unknown[] = [],
+): Promise<T[]> {
+  if (!url) {
+    throw new Error("DATABASE_URL is not set.");
+  }
+  if (!_sql) _sql = neon(url);
+  // neon's function-shaped client accepts (text, params, options) for raw
+  // parameterized queries. Returns rows directly.
+  // @ts-expect-error — neon's type defs prefer the tagged-template form,
+  // but the runtime function does accept positional args.
+  return (await _sql(text, params)) as T[];
+}

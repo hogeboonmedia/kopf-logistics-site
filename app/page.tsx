@@ -139,14 +139,21 @@ export default function HomePage() {
           {/* Hero graphic: offset truck */}
           <div className="relative hidden lg:block kopf-fade-up kopf-fade-up-delay-2">
             <div className="absolute -top-6 -left-6 h-full w-full" style={{ border: "1px solid color-mix(in srgb, var(--accent) 60%, transparent)" }} />
-            <div className="relative aspect-[5/4]" style={{ background: "var(--bg-steel)" }}>
+            <div className="relative aspect-[3/2] overflow-hidden">
+              {/* loading="eager" (not `priority`) — this image is CSS-hidden
+                * on mobile via the parent's `hidden lg:block`, so we don't
+                * want Next to emit a <link rel="preload"> that would waste
+                * mobile bandwidth on an image that never renders.
+                * Source is 1536×1024 (3:2); container matches so the photo fills
+                * edge-to-edge without letterboxing or cropping. */}
               <Image
-                src="/kopf-original/images/truck_full_5-1000x670-1.png"
-                alt="Kopf Logistics Group truck"
+                src="/kopf-photos/homepage/kopf-logistics-truck-highway-sunset.jpg"
+                alt="Kopf Logistics Group orange semi truck driving on highway at sunset with warehouse loading dock in background"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-contain p-8"
-                priority
+                className="object-cover"
+                loading="eager"
+                quality={85}
               />
               <span className="absolute top-6 right-6 font-[var(--font-jetbrains)] uppercase text-[10px] tracking-[0.3em]" style={{ color: "var(--text-concrete)" }}>
                 Fleet · Since &apos;66
@@ -244,11 +251,12 @@ export default function HomePage() {
           <div className="lg:col-span-7 relative">
             <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/pexels/team_meeting.jpg"
-                alt="Kopf operations team in discussion"
+                src="/kopf-photos/homepage/kopf-logistics-orange-semi-truck-highway.jpg"
+                alt="Kopf Logistics Group orange branded semi truck delivering freight on the highway"
                 fill
                 sizes="(max-width: 1024px) 100vw, 55vw"
                 className="object-cover"
+                quality={80}
               />
               <div className="absolute inset-0" style={{ background: "linear-gradient(225deg, transparent 40%, color-mix(in srgb, var(--bg) 85%, transparent))" }} />
             </div>
@@ -308,60 +316,68 @@ export default function HomePage() {
 
       {/* ═══════════════ §04 OUR TMS CAPABILITIES + DISPATCH PHOTO ═══════════════ */}
       <section className="relative px-6 lg:px-10 py-24 md:py-32">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-start">
-          <div className="lg:col-span-5 lg:sticky lg:top-28">
-            <SectionHeader
-              chapter="04"
-              eyebrow="11 Integrated Modules"
-              title="Our TMS Capabilities"
-              kicker="Our state-of-the-art Transportation Management System (TMS) lies at the heart of our operations, enabling us to provide exceptional service to our clients. With features like real-time tracking, advanced analytics, and seamless communication, our TMS equips you with the tools you need to optimize your logistics operations."
-            />
-
-            <div className="mt-8 relative aspect-[5/4] overflow-hidden">
-              <Image
-                src="/pexels/dispatch_office.jpg"
-                alt="Dispatch office using Kopf's TMS"
-                fill
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover"
+        <div className="max-w-7xl mx-auto">
+          {/* Top row: header (left) + photo (right) — 2-col blocking */}
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5">
+              <SectionHeader
+                chapter="04"
+                eyebrow="11 Integrated Modules"
+                title="Our TMS Capabilities"
+                kicker="Our state-of-the-art Transportation Management System (TMS) lies at the heart of our operations, enabling us to provide exceptional service to our clients. With features like real-time tracking, advanced analytics, and seamless communication, our TMS equips you with the tools you need to optimize your logistics operations."
               />
-              <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                <span className="px-3 py-1 font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em]" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-                  McLeod TMS
-                </span>
-                <span className="font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em]" style={{ color: "var(--text-muted)" }}>
-                  Cloud disaster recovery
-                </span>
+            </div>
+
+            <div className="lg:col-span-7">
+              <div className="relative aspect-[3/2] overflow-hidden">
+                <Image
+                  src="/kopf-photos/homepage/kopf-tms-dashboard-load-monitoring.jpg"
+                  alt="Kopf Logistics dispatcher reviewing the McLeod TMS dashboard with active loads, on-time rate, and US route map"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover"
+                  quality={80}
+                />
+                <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
+                  <span className="px-3 py-1 font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em]" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
+                    McLeod TMS
+                  </span>
+                  <span className="font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em]" style={{ color: "var(--text-muted)" }}>
+                    Cloud disaster recovery
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-7">
-            <ul className="grid gap-x-10 gap-y-4 md:grid-cols-2">
-              {tmsCapabilities.map((cap, i) => (
-                <li
-                  key={cap}
-                  className="group flex items-baseline gap-4 pt-3 transition"
-                  style={{ borderTop: "1px solid var(--hairline-strong)" }}
-                >
-                  <span className="font-[var(--font-jetbrains)] text-xs tabular-nums transition" style={{ color: "var(--text-concrete)" }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-base" style={{ color: "var(--text)" }}>{cap}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Bottom row: 1–11 modules — full width below the top blocking */}
+          <ul className="mt-16 md:mt-20 grid gap-x-10 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
+            {tmsCapabilities.map((cap, i) => (
+              <li
+                key={cap}
+                className="group flex items-baseline gap-4 pt-3 transition"
+                style={{ borderTop: "1px solid var(--hairline-strong)" }}
+              >
+                <span className="font-[var(--font-jetbrains)] text-xs tabular-nums transition" style={{ color: "var(--text-concrete)" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="text-base" style={{ color: "var(--text)" }}>{cap}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       {/* ═══════════════ §05 EQUIPMENT WE OPERATE ═══════════════ */}
       <section className="relative overflow-hidden isolate py-24 md:py-32 px-6 lg:px-10">
+        {/* Decorative bg — only shows at 25% opacity, so quality=40 is visually
+          * indistinguishable from 75 but ~40% fewer bytes. */}
         <Image
           src="/pexels/truck_fleet.jpg"
           alt=""
           fill
           sizes="100vw"
+          quality={40}
           className="object-cover object-center -z-20 opacity-25"
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: "linear-gradient(135deg, color-mix(in srgb, var(--bg) 95%, transparent), color-mix(in srgb, var(--bg) 85%, transparent))" }} />
@@ -384,10 +400,11 @@ export default function HomePage() {
           <div className="lg:col-span-6 relative">
             <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/pexels/warehouse_ops.jpg"
-                alt="Warehouse operations and freight coordination"
+                src="/kopf-photos/homepage/kopf-logistics-dispatch-office-team.jpg"
+                alt="Kopf Logistics dispatchers monitoring freight loads at workstations in the Elkhart office"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
+                quality={80}
                 className="object-cover"
               />
             </div>
@@ -475,8 +492,12 @@ export default function HomePage() {
             <div className="relative min-h-[340px] lg:min-h-[440px] overflow-hidden order-1 lg:order-2" style={{ background: "var(--accent)" }}>
               <div className="absolute inset-0 grid place-items-center">
                 <div className="text-center px-8">
+                  {/* The slash's descender + the negative margin used to push
+                    * COMMISSION SPLIT into the bottom of the 70/30, causing an
+                    * overlap. Switch to mt-3 so the label sits cleanly below
+                    * the giant numerals on every viewport. */}
                   <span className="block font-[var(--font-anton)] text-[22vw] lg:text-[10rem] leading-none opacity-20" style={{ color: "var(--on-accent)" }}>70/30</span>
-                  <span className="block -mt-6 font-[var(--font-anton)] text-3xl md:text-4xl uppercase" style={{ color: "var(--on-accent)" }}>Commission Split</span>
+                  <span className="block mt-3 font-[var(--font-anton)] text-3xl md:text-4xl uppercase" style={{ color: "var(--on-accent)" }}>Commission Split</span>
                 </div>
               </div>
               <span className="absolute top-6 left-6 kopf-chapter" style={{ color: "var(--on-accent)" }}>§ 08</span>
@@ -534,6 +555,7 @@ export default function HomePage() {
           alt=""
           fill
           sizes="100vw"
+          quality={50}
           className="object-cover object-center -z-20"
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10 kopf-photo-overlay" />
@@ -590,6 +612,7 @@ export default function HomePage() {
           alt=""
           fill
           sizes="100vw"
+          quality={40}
           className="object-cover object-center -z-20 opacity-30"
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10 kopf-photo-overlay" />

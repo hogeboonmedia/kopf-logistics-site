@@ -1,13 +1,17 @@
 /**
  * /admin/inquiries — Marissa's contact-form submission dashboard.
  *
- * Lists every submission (sent and blocked) with geo + IP + disposition.
- * Replaces the WPForms submission UI. Auth-gated by middleware.ts; we also
- * call requireAdminSession() here for defence in depth.
+ * Lists every submission across every form on the site (general contact,
+ * agent application, shipper inquiry, driver application). Each row is
+ * tagged with a `source` so it's clear which form it came from. Filters
+ * include source, disposition, geo country, and keyword search.
+ *
+ * Auth-gated by middleware.ts; we also requireAdminSession() here for
+ * defence in depth.
  */
 
 import { requireAdminSession } from "@/lib/auth/server";
-import { isDbConfigured, sql } from "@/lib/db/client";
+import { isDbConfigured, query } from "@/lib/db/client";
 import AdminShell from "@/components/admin/AdminShell";
 import InquiryRowActions from "@/components/admin/InquiryRowActions";
 
@@ -16,12 +20,14 @@ export const runtime = "nodejs";
 
 interface Submission {
   id: string;
+  source: string;
   first_name: string;
   last_name: string | null;
   email: string;
   phone: string | null;
   inquiry: string | null;
   body: string;
+  extra_fields: Record<string, unknown> | null;
   disposition: string;
   disposition_reason: string | null;
   ip: string | null;
@@ -30,6 +36,20 @@ interface Submission {
   cleantalk_verdict: string | null;
   created_at: string;
 }
+
+const SOURCE_LABEL: Record<string, string> = {
+  contact: "General Inquiry",
+  agent: "Freight Agent Application",
+  shippers: "Shipper Inquiry",
+  drivers: "Driver Application",
+};
+
+const SOURCE_TONE: Record<string, string> = {
+  contact: "var(--accent)",
+  agent: "#7eb6ff",
+  shippers: "#9ee493",
+  drivers: "#ffb86b",
+};
 
 const DISPOSITION_LABEL: Record<string, { label: string; tone: "good" | "bad" | "warn" }> = {
   sent: { label: "Sent", tone: "good" },
@@ -46,7 +66,12 @@ const DISPOSITION_LABEL: Record<string, { label: string; tone: "good" | "bad" | 
 export default async function InquiriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ disposition?: string; country?: string; q?: string }>;
+  searchParams: Promise<{
+    source?: string;
+    disposition?: string;
+    country?: string;
+    q?: string;
+  }>;
 }) {
   const session = await requireAdminSession();
   const params = await searchParams;
@@ -59,100 +84,65 @@ export default async function InquiriesPage({
     );
   }
 
+  const filterSource = params.source?.trim() || null;
   const filterDisposition = params.disposition?.trim() || null;
   const filterCountry = params.country?.trim().toUpperCase() || null;
   const filterQ = params.q?.trim() || null;
 
-  // Build the WHERE clause inline because the neon `sql` template doesn't
-  // support dynamic ANDed conditions cleanly. We always cap at 200 rows.
-  let rows: Submission[];
-  if (filterDisposition && filterCountry && filterQ) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE disposition = ${filterDisposition}
-        AND geo_country = ${filterCountry}
-        AND (body ILIKE ${"%" + filterQ + "%"} OR email ILIKE ${"%" + filterQ + "%"})
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else if (filterDisposition && filterCountry) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE disposition = ${filterDisposition} AND geo_country = ${filterCountry}
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else if (filterDisposition && filterQ) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE disposition = ${filterDisposition}
-        AND (body ILIKE ${"%" + filterQ + "%"} OR email ILIKE ${"%" + filterQ + "%"})
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else if (filterCountry && filterQ) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE geo_country = ${filterCountry}
-        AND (body ILIKE ${"%" + filterQ + "%"} OR email ILIKE ${"%" + filterQ + "%"})
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else if (filterDisposition) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE disposition = ${filterDisposition}
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else if (filterCountry) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE geo_country = ${filterCountry}
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else if (filterQ) {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      WHERE body ILIKE ${"%" + filterQ + "%"} OR email ILIKE ${"%" + filterQ + "%"}
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
-  } else {
-    rows = (await sql`
-      SELECT id::text, first_name, last_name, email, phone, inquiry, body,
-             disposition, disposition_reason, ip::text AS ip, geo_country, geo_city,
-             cleantalk_verdict, created_at
-      FROM contact_submissions
-      ORDER BY created_at DESC LIMIT 200
-    `) as Submission[];
+  // Build dynamic WHERE clause + parameterized values via the underlying neon
+  // client's .query() method (avoids the explosion of template-literal cases
+  // that the old version of this page used to handle filter combinations).
+  const conditions: string[] = [];
+  const values: unknown[] = [];
+  if (filterSource) {
+    values.push(filterSource);
+    conditions.push(`source = $${values.length}`);
   }
+  if (filterDisposition) {
+    values.push(filterDisposition);
+    conditions.push(`disposition = $${values.length}`);
+  }
+  if (filterCountry) {
+    values.push(filterCountry);
+    conditions.push(`geo_country = $${values.length}`);
+  }
+  if (filterQ) {
+    values.push(`%${filterQ}%`);
+    conditions.push(
+      `(body ILIKE $${values.length} OR email ILIKE $${values.length} OR extra_fields::text ILIKE $${values.length})`,
+    );
+  }
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  const stats = (await sql`
-    SELECT disposition, COUNT(*)::int AS n
-    FROM contact_submissions
-    WHERE created_at > NOW() - INTERVAL '30 days'
-    GROUP BY disposition
-  `) as Array<{ disposition: string; n: number }>;
-  const totals = stats.reduce<Record<string, number>>((acc, s) => {
-    acc[s.disposition] = s.n;
-    return acc;
-  }, {});
+  const rows = await query<Submission>(
+    `SELECT id::text, source, first_name, last_name, email, phone, inquiry, body,
+            extra_fields, disposition, disposition_reason, ip::text AS ip,
+            geo_country, geo_city, cleantalk_verdict, created_at
+     FROM contact_submissions
+     ${where}
+     ORDER BY created_at DESC LIMIT 200`,
+    values,
+  );
+
+  // 30-day stats by source (sent only — for the per-source chips at the top)
+  const sourceStatsRows = await query<{ source: string; n: number }>(
+    `SELECT source, COUNT(*)::int AS n
+     FROM contact_submissions
+     WHERE disposition = 'sent' AND created_at > NOW() - INTERVAL '30 days'
+     GROUP BY source`,
+  );
+  const sourceStats: Record<string, number> = {};
+  for (const r of sourceStatsRows) sourceStats[r.source] = r.n;
+
+  // 30-day stats by disposition (for the spam-blocked chips)
+  const dispRows = await query<{ disposition: string; n: number }>(
+    `SELECT disposition, COUNT(*)::int AS n
+     FROM contact_submissions
+     WHERE created_at > NOW() - INTERVAL '30 days'
+     GROUP BY disposition`,
+  );
+  const dispTotals: Record<string, number> = {};
+  for (const r of dispRows) dispTotals[r.disposition] = r.n;
 
   return (
     <AdminShell session={session} active="inquiries">
@@ -160,43 +150,69 @@ export default async function InquiriesPage({
         <div className="flex items-center gap-3 mb-3">
           <span className="kopf-chapter">§ Inquiries</span>
           <span className="h-px w-10" style={{ background: "var(--accent)" }} />
-          <span className="kopf-eyebrow">Last 200 contact form submissions</span>
+          <span className="kopf-eyebrow">Last 200 submissions across all forms</span>
         </div>
         <h1
           className="font-[var(--font-anton)] uppercase tracking-tight text-4xl md:text-5xl"
           style={{ color: "var(--text)" }}
         >
-          Contact Submissions
+          Form Submissions
         </h1>
       </div>
 
-      {/* 30-day stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <Stat label="Sent (30d)" value={totals["sent"] ?? 0} tone="good" />
-        <Stat
-          label="Blocked: CleanTalk (30d)"
-          value={totals["blocked_cleantalk"] ?? 0}
-          tone="bad"
+      {/* Per-source 30-day stats — clicking jumps to that filter */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        {(["contact", "agent", "shippers", "drivers"] as const).map((src) => (
+          <SourceStat
+            key={src}
+            source={src}
+            label={SOURCE_LABEL[src]}
+            value={sourceStats[src] ?? 0}
+            color={SOURCE_TONE[src]}
+            isActive={filterSource === src}
+          />
+        ))}
+      </div>
+
+      {/* Spam-blocked stats */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+        <SmallStat
+          label="Blocked · CleanTalk (30d)"
+          value={dispTotals["blocked_cleantalk"] ?? 0}
         />
-        <Stat
-          label="Blocked: Geo / IP (30d)"
-          value={(totals["blocked_country"] ?? 0) + (totals["blocked_ip"] ?? 0)}
-          tone="bad"
+        <SmallStat
+          label="Blocked · Geo / IP (30d)"
+          value={(dispTotals["blocked_country"] ?? 0) + (dispTotals["blocked_ip"] ?? 0)}
         />
-        <Stat
-          label="Blocked: Honeypot / Turnstile / Keyword"
+        <SmallStat
+          label="Blocked · Honeypot / Turnstile / Keyword"
           value={
-            (totals["blocked_honeypot"] ?? 0) +
-            (totals["blocked_turnstile"] ?? 0) +
-            (totals["blocked_keyword"] ?? 0)
+            (dispTotals["blocked_honeypot"] ?? 0) +
+            (dispTotals["blocked_turnstile"] ?? 0) +
+            (dispTotals["blocked_keyword"] ?? 0)
           }
-          tone="bad"
         />
       </div>
 
       {/* Filters */}
       <form method="GET" className="flex flex-wrap gap-3 mb-6 items-end">
-        <Field label="Search body / email" name="q" defaultValue={filterQ ?? ""} />
+        <Select
+          label="Form"
+          name="source"
+          defaultValue={filterSource ?? ""}
+          options={[
+            { value: "", label: "All forms" },
+            { value: "contact", label: "General Inquiry" },
+            { value: "agent", label: "Agent Application" },
+            { value: "shippers", label: "Shipper Inquiry" },
+            { value: "drivers", label: "Driver Application" },
+          ]}
+        />
+        <Field
+          label="Search body / email / fields"
+          name="q"
+          defaultValue={filterQ ?? ""}
+        />
         <Field
           label="Country (ISO)"
           name="country"
@@ -226,13 +242,17 @@ export default async function InquiriesPage({
       </form>
 
       {/* Table */}
-      <div className="overflow-x-auto" style={{ border: "1px solid var(--hairline-strong)" }}>
+      <div
+        className="overflow-x-auto"
+        style={{ border: "1px solid var(--hairline-strong)" }}
+      >
         <table className="w-full text-sm">
           <thead style={{ background: "var(--bg-elevated)" }}>
             <tr className="text-left font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em]">
               <Th>When</Th>
+              <Th>Form</Th>
               <Th>Name + Email</Th>
-              <Th>Body</Th>
+              <Th>Body / Fields</Th>
               <Th>Origin</Th>
               <Th>Status</Th>
               <Th>Actions</Th>
@@ -242,7 +262,7 @@ export default async function InquiriesPage({
             {rows.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={7}
                   className="px-4 py-12 text-center"
                   style={{ color: "var(--text-muted)" }}
                 >
@@ -272,6 +292,17 @@ export default async function InquiriesPage({
                     </div>
                   </Td>
                   <Td>
+                    <span
+                      className="inline-block px-2 py-1 text-[10px] uppercase tracking-[0.18em] font-[var(--font-jetbrains)]"
+                      style={{
+                        background: `color-mix(in srgb, ${SOURCE_TONE[r.source] ?? "var(--accent)"} 18%, transparent)`,
+                        color: SOURCE_TONE[r.source] ?? "var(--accent)",
+                      }}
+                    >
+                      {SOURCE_LABEL[r.source] ?? r.source}
+                    </span>
+                  </Td>
+                  <Td>
                     <div style={{ color: "var(--text)" }}>
                       {r.first_name} {r.last_name ?? ""}
                     </div>
@@ -292,12 +323,17 @@ export default async function InquiriesPage({
                     )}
                   </Td>
                   <Td>
-                    <div
-                      className="text-sm leading-snug max-w-md line-clamp-3"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {r.body}
-                    </div>
+                    {r.body && r.body !== "" && (
+                      <div
+                        className="text-sm leading-snug max-w-md line-clamp-3 mb-2"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {r.body}
+                      </div>
+                    )}
+                    {r.extra_fields && Object.keys(r.extra_fields).length > 0 && (
+                      <ExtraFieldsList fields={r.extra_fields} />
+                    )}
                     {r.inquiry && (
                       <div
                         className="mt-1 text-[10px] uppercase tracking-[0.18em] font-[var(--font-jetbrains)]"
@@ -371,15 +407,83 @@ export default async function InquiriesPage({
   );
 }
 
-function Stat({
+/** Renders the audience-specific extra_fields as a compact key/value block. */
+function ExtraFieldsList({ fields }: { fields: Record<string, unknown> }) {
+  const entries = Object.entries(fields).filter(
+    ([, v]) => v !== null && v !== undefined && v !== "" && (!Array.isArray(v) || v.length > 0),
+  );
+  if (entries.length === 0) return null;
+  return (
+    <ul
+      className="max-w-md mt-1 text-[11px] leading-snug font-[var(--font-jetbrains)]"
+      style={{ color: "var(--text-muted)" }}
+    >
+      {entries.map(([k, v]) => (
+        <li key={k}>
+          <span style={{ color: "var(--text-concrete)" }}>{prettyKey(k)}:</span>{" "}
+          <span style={{ color: "var(--text)" }}>
+            {Array.isArray(v) ? v.join(", ") : String(v)}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function prettyKey(k: string): string {
+  return k
+    .replace(/[_-]/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function SourceStat({
+  source,
   label,
   value,
-  tone,
+  color,
+  isActive,
 }: {
+  source: string;
   label: string;
   value: number;
-  tone: "good" | "bad";
+  color: string;
+  isActive: boolean;
 }) {
+  return (
+    <a
+      href={isActive ? "/admin/inquiries/" : `/admin/inquiries/?source=${source}`}
+      className="block p-4 transition hover:opacity-90"
+      style={{
+        background: "var(--bg-elevated)",
+        border: `1px solid ${isActive ? color : "var(--hairline-strong)"}`,
+      }}
+    >
+      <div
+        className="text-[10px] uppercase tracking-[0.22em] font-[var(--font-jetbrains)]"
+        style={{ color: "var(--text-concrete)" }}
+      >
+        {label} (30d)
+      </div>
+      <div
+        className="font-[var(--font-anton)] text-3xl tracking-tight mt-1"
+        style={{ color }}
+      >
+        {value}
+      </div>
+      {isActive && (
+        <div
+          className="mt-2 text-[10px] uppercase tracking-[0.22em] font-[var(--font-jetbrains)]"
+          style={{ color }}
+        >
+          ↻ Filtering · click to clear
+        </div>
+      )}
+    </a>
+  );
+}
+
+function SmallStat({ label, value }: { label: string; value: number }) {
   return (
     <div
       className="p-4"
@@ -395,8 +499,8 @@ function Stat({
         {label}
       </div>
       <div
-        className="font-[var(--font-anton)] text-3xl tracking-tight mt-1"
-        style={{ color: tone === "good" ? "var(--accent)" : "var(--text)" }}
+        className="font-[var(--font-anton)] text-2xl tracking-tight mt-1"
+        style={{ color: "var(--text)" }}
       >
         {value}
       </div>
@@ -502,10 +606,9 @@ function DbNotConfigured() {
         Database not yet configured
       </h2>
       <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-        Provision Vercel Postgres and set <code>DATABASE_URL</code> as an env var, then
-        run <code>psql $DATABASE_URL -f lib/db/migrations/002_contact_submissions.sql</code>{" "}
-        and <code>003_blocklists.sql</code>. Once that's done, this page will show every
-        contact form submission and let you block IPs / countries / keywords with one click.
+        Provision Vercel Postgres and run all migrations in{" "}
+        <code>lib/db/migrations/</code>. Once that&apos;s done, this page will show every
+        form submission grouped by source (general contact, agent, shipper, driver).
       </p>
     </div>
   );

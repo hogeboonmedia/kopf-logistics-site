@@ -47,6 +47,11 @@ const nextConfig: NextConfig = {
     // WebP ~25% smaller than JPEG. Next.js falls back automatically for older
     // browsers. This is the single biggest lever for LCP on image-heavy pages.
     formats: ["image/avif", "image/webp"],
+    // Next 16 rejects quality values not in this list (security: prevents
+    // attackers from hammering the optimizer with random quality values to
+    // inflate cost). Keep 75 (default) and add 40/50/60 for decorative bg
+    // images that can tolerate lower quality.
+    qualities: [40, 50, 60, 75, 80, 85, 90, 100],
     // Cache optimized image variants at the CDN for 30 days (default is 60s).
     // Next rebuilds regenerate keys so this doesn't cause stale images.
     minimumCacheTTL: 60 * 60 * 24 * 30,
@@ -54,6 +59,13 @@ const nextConfig: NextConfig = {
   // Keep compiled output smaller: drop console.* in production except warn/error.
   compiler: {
     removeConsole: { exclude: ["warn", "error"] },
+  },
+  // Per-import code-splitting for icon libs. Without this, importing a single
+  // icon from lucide-react can pull the whole barrel file's metadata into the
+  // bundle. With this, each icon becomes its own chunk and only what's used
+  // ships. (Same trick works for date-fns, ramda, etc.)
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
   },
   async headers() {
     return [

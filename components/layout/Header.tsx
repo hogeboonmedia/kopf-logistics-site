@@ -17,17 +17,22 @@ const nav = [
   { label: "Contact", href: "/contact" },
 ];
 
+// Brand-blue header treatment — chosen via prototype A/B/C review (Variant B,
+// at 70% mix instead of the prototype's original 88%, for more atmosphere).
+//   - 70% var(--accent-2) blue + 30% transparent → photo behind ghosts through
+//   - 12px backdrop blur for readability
+//   - Always-on (no scroll dependency) for consistent brand expression
+const HEADER_BG = "color-mix(in srgb, var(--accent-2) 70%, transparent)";
+const HEADER_BORDER = "1px solid rgba(255, 255, 255, 0.12)";
+// Text on blue needs a brighter color than the original muted concrete used
+// against the dark warm-ink backdrop. Bone-tinted whites read cleanly here.
+const HEADER_TEXT = "rgba(245, 239, 230, 0.95)";
+const HEADER_TEXT_MUTED = "rgba(245, 239, 230, 0.78)";
+const HEADER_HAIRLINE = "rgba(255, 255, 255, 0.18)";
+
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -35,18 +40,18 @@ export default function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 transition-colors duration-200"
+      className="sticky top-0 z-50"
       style={{
-        background: scrolled ? "color-mix(in srgb, var(--bg) 92%, transparent)" : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : undefined,
-        WebkitBackdropFilter: scrolled ? "blur(12px)" : undefined,
-        borderBottom: scrolled ? "1px solid var(--hairline)" : "1px solid transparent",
+        background: HEADER_BG,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: HEADER_BORDER,
       }}
     >
       {/* Top utility strip */}
       <div
         className="hidden md:flex items-center justify-between px-6 lg:px-10 py-2 text-[11px] font-[var(--font-jetbrains)] tracking-[0.18em] uppercase"
-        style={{ borderBottom: "1px solid var(--hairline)", color: "var(--text-concrete)" }}
+        style={{ borderBottom: `1px solid ${HEADER_HAIRLINE}`, color: HEADER_TEXT_MUTED }}
       >
         <span className="flex items-center gap-6">
           <span>Est. 1966 · Elkhart, Indiana</span>
@@ -93,13 +98,13 @@ export default function Header() {
                 href={item.href}
                 className="text-xs uppercase tracking-[0.22em] font-[var(--font-jetbrains)] font-medium transition-colors"
                 style={{
-                  color: active ? "var(--accent)" : "var(--text)",
+                  color: active ? "var(--accent)" : HEADER_TEXT,
                 }}
                 onMouseEnter={(e) => {
                   if (!active) (e.currentTarget.style.color = "var(--accent)");
                 }}
                 onMouseLeave={(e) => {
-                  if (!active) (e.currentTarget.style.color = "var(--text)");
+                  if (!active) (e.currentTarget.style.color = HEADER_TEXT);
                 }}
               >
                 {item.label}
@@ -119,8 +124,8 @@ export default function Header() {
             onClick={() => setOpen((v) => !v)}
             className="lg:hidden grid place-items-center w-11 h-11 transition"
             style={{
-              border: "1px solid var(--hairline-strong)",
-              color: "var(--text)",
+              border: `1px solid ${HEADER_HAIRLINE}`,
+              color: HEADER_TEXT,
             }}
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

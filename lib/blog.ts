@@ -162,3 +162,40 @@ export function titleCase(slug: string): string {
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : ""))
     .join(" ");
 }
+
+/**
+ * Slice a list of posts into a single paginated page.
+ *
+ * Used by the blog archive — the long "all articles" tail is broken into
+ * fixed-size pages with numbered controls. The hero/featured/latest sections
+ * on /blog/ page 1 are NOT routed through this; this only paginates the tail.
+ *
+ * @param posts     The full array to paginate (typically `older` — i.e.
+ *                  everything past the hero/featured/latest)
+ * @param pageNum   1-based page number
+ * @param perPage   Posts per page (default 10)
+ * @returns Sliced posts + navigation metadata
+ */
+export function getPaginatedPosts(
+  posts: Post[],
+  pageNum: number,
+  perPage = 10,
+): {
+  posts: Post[];
+  totalPages: number;
+  currentPage: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+} {
+  const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+  const safePage = Math.max(1, Math.min(pageNum, totalPages));
+  const start = (safePage - 1) * perPage;
+  const end = start + perPage;
+  return {
+    posts: posts.slice(start, end),
+    totalPages,
+    currentPage: safePage,
+    hasNext: safePage < totalPages,
+    hasPrev: safePage > 1,
+  };
+}

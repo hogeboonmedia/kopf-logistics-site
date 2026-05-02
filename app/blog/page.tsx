@@ -4,11 +4,16 @@ import Link from "next/link";
 import {
   getAllPosts,
   getAllCategories,
+  getPaginatedPosts,
   formatPostDate,
   titleCase,
 } from "@/lib/blog";
 import SectionHeader from "@/components/ui/SectionHeader";
+import BlogPagination from "@/components/sections/BlogPagination";
+import ArchiveList from "@/components/sections/ArchiveList";
 import { ArrowUpRight, Clock } from "lucide-react";
+
+const ARCHIVE_PER_PAGE = 10;
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -24,6 +29,10 @@ export default function BlogIndexPage() {
   const featured = rest.slice(0, 2);
   const latest = rest.slice(2, 12);
   const older = rest.slice(12);
+
+  // Page 1 of the archive (first 10) + total page count for the controls.
+  // Pages 2+ live at /blog/page/N/ — see app/blog/page/[num]/page.tsx
+  const archivePage1 = getPaginatedPosts(older, 1, ARCHIVE_PER_PAGE);
 
   return (
     <>
@@ -179,40 +188,16 @@ export default function BlogIndexPage() {
         </section>
       )}
 
-      {/* Archive list (all other posts) */}
+      {/* Archive list — first 10, with numbered pagination linking to /blog/page/2+ */}
       {older.length > 0 && (
         <section className="px-6 lg:px-10 py-14 md:py-20">
           <div className="max-w-7xl mx-auto">
             <SectionHeader chapter="03" eyebrow="Complete Archive" title="Every Article We've Written" />
-            <ul className="mt-10 divide-y" style={{ borderTop: "1px solid var(--hairline-strong)", borderBottom: "1px solid var(--hairline-strong)" }}>
-              {older.map((p) => (
-                <li key={p.slug} style={{ borderColor: "var(--hairline)" }}>
-                  <Link
-                    href={p.urlPath}
-                    className="group grid grid-cols-[auto_1fr_auto] gap-6 items-baseline py-5 transition"
-                  >
-                    <time
-                      className="font-[var(--font-jetbrains)] text-xs tabular-nums uppercase tracking-[0.22em]"
-                      style={{ color: "var(--text-concrete)" }}
-                    >
-                      {new Date(p.date).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
-                    </time>
-                    <span
-                      className="font-[var(--font-anton)] uppercase text-xl md:text-2xl leading-tight tracking-tight group-hover:text-[var(--accent)] transition"
-                      style={{ color: "var(--text)" }}
-                    >
-                      {p.title}
-                    </span>
-                    <span
-                      className="font-[var(--font-jetbrains)] text-[10px] uppercase tracking-[0.22em] hidden md:inline"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {titleCase(p.category)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <ArchiveList posts={archivePage1.posts} />
+            <BlogPagination
+              currentPage={1}
+              totalPages={archivePage1.totalPages}
+            />
           </div>
         </section>
       )}

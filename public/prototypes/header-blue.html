@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Header in Brand Blue · Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* ─────────────────────────────────────────────────
+   * Brand tokens — must match globals.css 1:1 so the
+   * prototype renders identically to production.
+   * ───────────────────────────────────────────────── */
+  :root {
+    --color-kopf-ink: #0F0B08;
+    --color-kopf-ink-2: #17110C;
+    --color-kopf-bone: #F5EFE6;
+    --color-kopf-bone-muted: #D6CFC3;
+    --color-kopf-orange: #EA580C;
+    --color-kopf-orange-deep: #B8410B;
+    --color-kopf-orange-bright: #F97316;
+    --color-kopf-concrete: #8A8075;
+    --color-kopf-blue: #015EAD;
+    --color-kopf-blue-bright: #1E7DC9;
+
+    --bg: var(--color-kopf-ink);
+    --text: var(--color-kopf-bone);
+    --text-muted: var(--color-kopf-bone-muted);
+    --text-concrete: var(--color-kopf-concrete);
+    --accent: var(--color-kopf-orange);
+    --on-accent: var(--color-kopf-ink);
+    --accent-2: var(--color-kopf-blue);
+    --hairline: rgba(245, 239, 230, 0.08);
+    --hairline-strong: rgba(245, 239, 230, 0.16);
+
+    --font-anton: "Anton", "Impact", sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-jetbrains: "JetBrains Mono", "Menlo", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ─────────────────────────────────────────────────
+   * Page-shell layout for the prototype
+   * ───────────────────────────────────────────────── */
+  .proto-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 11, 8, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--hairline-strong);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    font-family: var(--font-jetbrains);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+  .proto-toolbar strong { color: var(--accent-2); font-weight: 600; }
+  .proto-toolbar .pill {
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--hairline-strong);
+    cursor: pointer;
+    color: var(--text-muted);
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    transition: all 160ms ease;
+  }
+  .proto-toolbar .pill[aria-pressed="true"] {
+    background: var(--accent-2);
+    color: white;
+    border-color: var(--accent-2);
+  }
+  .proto-toolbar .pill:hover {
+    border-color: var(--accent-2);
+    color: var(--text);
+  }
+
+  .variant {
+    position: relative;
+    border-bottom: 4px solid var(--accent-2);
+  }
+
+  .variant-label {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 60;
+    background: var(--accent-2);
+    color: white;
+    padding: 0.5rem 0.9rem;
+    font-family: var(--font-jetbrains);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  /* ─────────────────────────────────────────────────
+   * The header itself — replicates production markup
+   * ───────────────────────────────────────────────── */
+  .kopf-header {
+    position: relative;
+    z-index: 50;
+    transition: background 200ms ease;
+  }
+  .kopf-utility {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-jetbrains);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    border-bottom: 1px solid rgba(245, 239, 230, 0.18);
+    color: rgba(245, 239, 230, 0.78);
+  }
+  @media (min-width: 768px) { .kopf-utility { display: flex; } }
+  .kopf-utility-left, .kopf-utility-right {
+    display: flex; gap: 1.5rem; align-items: center;
+  }
+  .kopf-utility a { color: inherit; text-decoration: none; transition: color 160ms; }
+  .kopf-utility a:hover { color: var(--accent); }
+  .kopf-utility .phone-icon { display: inline-block; width: 12px; height: 12px; vertical-align: middle; margin-right: 6px; }
+
+  .kopf-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    .kopf-utility, .kopf-row { padding-left: 2.5rem; padding-right: 2.5rem; }
+  }
+  .kopf-logo { height: 2.5rem; width: auto; display: block; }
+
+  .kopf-nav {
+    display: none;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) { .kopf-nav { display: flex; } }
+  .kopf-nav a {
+    font-family: var(--font-jetbrains);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    transition: color 160ms;
+  }
+  .kopf-nav a:hover, .kopf-nav a.active { color: var(--accent); }
+
+  .kopf-actions { display: flex; align-items: center; gap: 0.75rem; }
+  .kopf-cta {
+    display: none;
+    align-items: center;
+    padding: 0.7rem 1.2rem;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-family: var(--font-jetbrains);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 160ms;
+  }
+  @media (min-width: 768px) { .kopf-cta { display: inline-flex; } }
+  .kopf-cta:hover { background: var(--color-kopf-orange-bright); }
+
+  .kopf-theme-toggle {
+    display: none;
+    width: 2.5rem; height: 2.5rem;
+    border: 1px solid var(--hairline-strong);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+  @media (min-width: 640px) { .kopf-theme-toggle { display: inline-flex; } }
+
+  /* ─────────────────────────────────────────────────
+   * Variant A — SOLID BLUE (always opaque)
+   * Bold brand statement. Always visible, no scroll dependency.
+   * ───────────────────────────────────────────────── */
+  .v-solid .kopf-header {
+    background: var(--accent-2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .v-solid .kopf-utility {
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .v-solid .kopf-nav a { color: rgba(255, 255, 255, 0.92); }
+  .v-solid .kopf-nav a:hover, .v-solid .kopf-nav a.active { color: var(--accent); }
+  .v-solid .kopf-theme-toggle { color: white; border-color: rgba(255, 255, 255, 0.25); }
+
+  /* ─────────────────────────────────────────────────
+   * Variant B — BLUE TRANSLUCENT (chosen variant)
+   * 70% blue + 12px backdrop blur. Hero photo ghosts through more
+   * than the original 88% mix — softer, more atmospheric.
+   * ───────────────────────────────────────────────── */
+  .v-translucent .kopf-header {
+    background: color-mix(in srgb, var(--accent-2) 70%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .v-translucent .kopf-utility {
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .v-translucent .kopf-nav a { color: rgba(255, 255, 255, 0.95); }
+  .v-translucent .kopf-nav a:hover, .v-translucent .kopf-nav a.active { color: var(--accent); }
+  .v-translucent .kopf-theme-toggle { color: white; border-color: rgba(255, 255, 255, 0.22); }
+
+  /* ─────────────────────────────────────────────────
+   * Variant C — BLUE UTILITY STRIP ONLY (subtle accent)
+   * Only the thin top utility bar (Est. 1966 / phone) becomes
+   * blue. Main nav row stays transparent over the hero.
+   * ───────────────────────────────────────────────── */
+  .v-strip .kopf-header { background: transparent; }
+  .v-strip .kopf-utility {
+    background: var(--accent-2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .v-strip .kopf-nav a { color: var(--text); }
+  .v-strip .kopf-nav a:hover, .v-strip .kopf-nav a.active { color: var(--accent); }
+
+  /* ─────────────────────────────────────────────────
+   * Hero stub — gives the header something to overlay
+   * ───────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    min-height: 480px;
+    background-image: url("/pexels/truck_sunset_hero.jpg");
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15, 11, 8, 0.72), rgba(15, 11, 8, 0.45));
+    z-index: -1;
+  }
+  .hero-inner {
+    padding: 5rem 1.5rem 7rem;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  @media (min-width: 1024px) { .hero-inner { padding: 6rem 2.5rem 8rem; } }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    font-family: var(--font-jetbrains);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: var(--text-concrete);
+  }
+  .hero-eyebrow .glyph { color: var(--accent-2); font-weight: 600; }
+  .hero-eyebrow .rule { display: inline-block; width: 2.5rem; height: 1px; background: var(--accent); }
+  .hero-title {
+    font-family: var(--font-anton);
+    text-transform: uppercase;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .hero-title .row1 { display: block; font-size: clamp(3rem, 11vw, 7.5rem); }
+  .hero-title .row2 { display: block; font-size: clamp(3rem, 11vw, 7.5rem); color: var(--accent); }
+  .hero-sub {
+    margin-top: 2.5rem;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+  }
+
+  /* Page footer for clarity */
+  .proto-footer {
+    padding: 2.5rem 1.5rem 4rem;
+    border-top: 1px solid var(--hairline);
+    color: var(--text-concrete);
+    font-family: var(--font-jetbrains);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+  .proto-footer h2 {
+    font-family: var(--font-anton);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  .proto-footer ul { list-style: none; padding-left: 0; }
+  .proto-footer li { margin: 0.25rem 0; }
+  .proto-footer .ok { color: var(--accent-2); }
+  .proto-footer .keep { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- Toolbar at the top of the prototype only — explains what's being viewed -->
+<div class="proto-toolbar">
+  <strong>Prototype · Header in Brand Blue</strong>
+  <span style="color: var(--text-concrete);">Three variants stacked. Brand blue: <strong>#015EAD</strong>.</span>
+  <span style="color: var(--text-concrete); margin-left: auto;">Open the live site at <strong>localhost:3001</strong> to compare.</span>
+</div>
+
+<!-- ───────────────────────────────────────────────── -->
+<!-- VARIANT A: SOLID BLUE — always opaque -->
+<!-- ───────────────────────────────────────────────── -->
+<section class="variant v-solid">
+  <span class="variant-label">A · Solid Blue (always)</span>
+  <header class="kopf-header">
+    <div class="kopf-utility">
+      <span class="kopf-utility-left">
+        <span>Est. 1966 · Elkhart, Indiana</span>
+        <span style="display:none;" class="lg-only">Terminals: Elkhart IN · Athens GA · Seaford DE</span>
+      </span>
+      <span class="kopf-utility-right">
+        <a href="#contact">Contact Recruiting</a>
+        <a href="tel:5743495600">
+          <svg class="phone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          574.349.5600
+        </a>
+      </span>
+    </div>
+    <div class="kopf-row">
+      <a href="/" aria-label="Kopf Logistics Group" style="display: inline-flex; align-items: center;">
+        <img src="/kopf-original/images/kopf_orangelogo_no_bg_02.png" alt="Kopf Logistics Group" class="kopf-logo" />
+      </a>
+      <nav class="kopf-nav">
+        <a href="/shippers/">Shippers</a>
+        <a href="/carriers/">Carriers</a>
+        <a href="/drivers/">Drivers</a>
+        <a href="/agent/" class="active">Freight Agents</a>
+        <a href="/about/">About</a>
+        <a href="/blog/">Blog</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+      <div class="kopf-actions">
+        <button class="kopf-theme-toggle" aria-label="Theme toggle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round"/></svg>
+        </button>
+        <a href="/agent/" class="kopf-cta">Become an Agent</a>
+      </div>
+    </div>
+  </header>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="glyph">§ 00</span>
+        <span class="rule"></span>
+        <span>Est. 1966 · Elkhart, Indiana</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="row1">Kopf Logistics</span>
+        <span class="row2">Group</span>
+      </h1>
+      <p class="hero-sub">For over 50 years, Kopf Logistics Group has been a pioneer in the trucking logistics sector, offering a 70/30 commission split, dedicated 24/7 office support, weekly settlements, and an award-winning Transportation Management System.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────────────────────────────── -->
+<!-- VARIANT B: BLUE TRANSLUCENT — replaces current scrolled state -->
+<!-- ───────────────────────────────────────────────── -->
+<section class="variant v-translucent">
+  <span class="variant-label">B · Blue + Blur (translucent)</span>
+  <header class="kopf-header">
+    <div class="kopf-utility">
+      <span class="kopf-utility-left">
+        <span>Est. 1966 · Elkhart, Indiana</span>
+      </span>
+      <span class="kopf-utility-right">
+        <a href="#contact">Contact Recruiting</a>
+        <a href="tel:5743495600">
+          <svg class="phone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          574.349.5600
+        </a>
+      </span>
+    </div>
+    <div class="kopf-row">
+      <a href="/" style="display: inline-flex; align-items: center;">
+        <img src="/kopf-original/images/kopf_orangelogo_no_bg_02.png" alt="Kopf Logistics Group" class="kopf-logo" />
+      </a>
+      <nav class="kopf-nav">
+        <a href="/shippers/">Shippers</a>
+        <a href="/carriers/">Carriers</a>
+        <a href="/drivers/">Drivers</a>
+        <a href="/agent/" class="active">Freight Agents</a>
+        <a href="/about/">About</a>
+        <a href="/blog/">Blog</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+      <div class="kopf-actions">
+        <button class="kopf-theme-toggle" aria-label="Theme toggle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round"/></svg>
+        </button>
+        <a href="/agent/" class="kopf-cta">Become an Agent</a>
+      </div>
+    </div>
+  </header>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="glyph">§ 00</span>
+        <span class="rule"></span>
+        <span>Est. 1966 · Elkhart, Indiana</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="row1">Kopf Logistics</span>
+        <span class="row2">Group</span>
+      </h1>
+      <p class="hero-sub">Same hero photo behind. The blue header is translucent (88% blue + 12px blur), so you can sense the orange truck bleeding through. Closer in spirit to the current "scrolled" treatment, just colored.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────────────────────────────────────── -->
+<!-- VARIANT C: BLUE UTILITY STRIP ONLY — subtle -->
+<!-- ───────────────────────────────────────────────── -->
+<section class="variant v-strip">
+  <span class="variant-label">C · Blue Strip Only (subtle)</span>
+  <header class="kopf-header" style="background: rgba(15, 11, 8, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--hairline);">
+    <div class="kopf-utility">
+      <span class="kopf-utility-left">
+        <span>Est. 1966 · Elkhart, Indiana</span>
+      </span>
+      <span class="kopf-utility-right">
+        <a href="#contact">Contact Recruiting</a>
+        <a href="tel:5743495600">
+          <svg class="phone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          574.349.5600
+        </a>
+      </span>
+    </div>
+    <div class="kopf-row">
+      <a href="/" style="display: inline-flex; align-items: center;">
+        <img src="/kopf-original/images/kopf_orangelogo_no_bg_02.png" alt="Kopf Logistics Group" class="kopf-logo" />
+      </a>
+      <nav class="kopf-nav">
+        <a href="/shippers/">Shippers</a>
+        <a href="/carriers/">Carriers</a>
+        <a href="/drivers/">Drivers</a>
+        <a href="/agent/" class="active">Freight Agents</a>
+        <a href="/about/">About</a>
+        <a href="/blog/">Blog</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+      <div class="kopf-actions">
+        <button class="kopf-theme-toggle" aria-label="Theme toggle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round"/></svg>
+        </button>
+        <a href="/agent/" class="kopf-cta">Become an Agent</a>
+      </div>
+    </div>
+  </header>
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="glyph">§ 00</span>
+        <span class="rule"></span>
+        <span>Est. 1966 · Elkhart, Indiana</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="row1">Kopf Logistics</span>
+        <span class="row2">Group</span>
+      </h1>
+      <p class="hero-sub">Only the slim utility bar above the logo turns blue. The main nav row stays exactly as today (dark + blur on scroll). Gives you a touch of brand blue at the very top without changing the editorial feel of the main nav.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Decision footer -->
+<footer class="proto-footer">
+  <div style="max-width: 1280px; margin: 0 auto;">
+    <h2>What stays the same in all 3</h2>
+    <ul>
+      <li><span class="keep">▶</span> Logo: orange Kopf script, unchanged</li>
+      <li><span class="keep">▶</span> &ldquo;Become an Agent&rdquo; button: orange — primary CTA color stays loud</li>
+      <li><span class="keep">▶</span> Active page link + hover: orange — visual rhythm token preserved</li>
+      <li><span class="keep">▶</span> Mobile nav, theme toggle, font system — unchanged</li>
+    </ul>
+    <h2 style="margin-top: 2.5rem;">What's different per variant</h2>
+    <ul>
+      <li><span class="ok">▶ A · Solid Blue</span> — Boldest. Header is permanently blue, regardless of scroll position. Maximum brand statement.</li>
+      <li><span class="ok">▶ B · Blue + Blur</span> — The current dark-translucent scrolled state, but in blue. Photo behind shows through. Feels softer.</li>
+      <li><span class="ok">▶ C · Blue Strip Only</span> — Conservative. Just the slim utility bar (Est. 1966 / phone) becomes blue. Main nav stays as-is.</li>
+    </ul>
+    <p style="margin-top: 2rem; color: var(--text-muted); text-transform: none; letter-spacing: 0; font-family: var(--font-body);">
+      Tell me which variant (or some combination) and I'll wire it into the actual <code style="background: var(--hairline); padding: 2px 6px;">components/layout/Header.tsx</code>.
+      Or pass.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
