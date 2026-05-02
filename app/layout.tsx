@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ThemeScript from "@/components/ui/ThemeScript";
+import BackToTopButton from "@/components/ui/BackToTopButton";
 
 // Anton = display type (hero + section H1/H2). Preloaded so the above-fold
 // hero doesn't flash in fallback font.
@@ -165,6 +166,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <BackToTopButton />
       </body>
     </html>
   );

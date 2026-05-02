@@ -128,6 +128,10 @@
     scroll-behavior: smooth;
     background: var(--bg);
   }
+  /* Sticky header is ~96px tall (utility strip + main row). Without this,
+   * #anchor scroll targets land underneath the header. Applies to BOTH
+   * native browser hash navigation and programmatic scrollIntoView. */
+  section[id] { scroll-margin-top: 96px; }
   body {
     background: var(--bg);
     color: var(--text);
