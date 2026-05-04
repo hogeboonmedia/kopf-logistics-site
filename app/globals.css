@@ -18,9 +18,17 @@
    *   - The "§" chapter glyph that prefixes section headers
    *   - Form field eyebrow labels + required asterisks
    *   - Form input focus outlines
-   * Light + dark modes share the same value (per design call). */
+   *   - Translucent header background
+   *
+   * Three shades so the SAME perceptual weight reads on both themes:
+   *   - blue        = mid (#015EAD)  — used in dark mode against ink bg
+   *   - blue-bright = light (#1E7DC9) — gradient/strong tint
+   *   - blue-deep   = dark (#013F7A)  — used in light mode against bone bg,
+   *                                     where the mid tone reads too washed out
+   */
   --color-kopf-blue: #015EAD;
   --color-kopf-blue-bright: #1E7DC9;
+  --color-kopf-blue-deep: #013F7A;
 
   --font-display: var(--font-anton);
   --font-body: var(--font-inter);
@@ -78,9 +86,12 @@
   --selection-fg: #FFFBF4;
   --focus: #C2410C;
   --on-accent: #FFFBF4;
-  --accent-2: var(--color-kopf-blue);
-  --accent-2-strong: var(--color-kopf-blue-bright);
-  --focus-form: var(--color-kopf-blue);
+  /* Light-mode blue is darker than dark-mode blue so § glyphs, form labels,
+   * focus rings, and the translucent header read with the same perceptual
+   * weight against the bone background that the mid blue reads against ink. */
+  --accent-2: var(--color-kopf-blue-deep);
+  --accent-2-strong: var(--color-kopf-blue);
+  --focus-form: var(--color-kopf-blue-deep);
   --photo-overlay: linear-gradient(135deg, rgba(251, 247, 240, 0.65), rgba(251, 247, 240, 0.25));
   color-scheme: light;
 
@@ -128,6 +139,10 @@
     scroll-behavior: smooth;
     background: var(--bg);
   }
+  /* Sticky header is ~96px tall (utility strip + main row). Without this,
+   * #anchor scroll targets land underneath the header. Applies to BOTH
+   * native browser hash navigation and programmatic scrollIntoView. */
+  section[id] { scroll-margin-top: 96px; }
   body {
     background: var(--bg);
     color: var(--text);

@@ -18,11 +18,12 @@ const nav = [
 ];
 
 // Brand-blue header treatment — chosen via prototype A/B/C review (Variant B,
-// at 70% mix instead of the prototype's original 88%, for more atmosphere).
-//   - 70% var(--accent-2) blue + 30% transparent → photo behind ghosts through
+// at 80% mix; tuned up from 70% so the nav reads with more weight on
+// photo-heavy hero sections).
+//   - 80% var(--accent-2) blue + 20% transparent → photo behind ghosts through
 //   - 12px backdrop blur for readability
 //   - Always-on (no scroll dependency) for consistent brand expression
-const HEADER_BG = "color-mix(in srgb, var(--accent-2) 70%, transparent)";
+const HEADER_BG = "color-mix(in srgb, var(--accent-2) 80%, transparent)";
 const HEADER_BORDER = "1px solid rgba(255, 255, 255, 0.12)";
 // Text on blue needs a brighter color than the original muted concrete used
 // against the dark warm-ink backdrop. Bone-tinted whites read cleanly here.

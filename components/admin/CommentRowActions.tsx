@@ -15,7 +15,7 @@ export default function CommentRowActions({
 
   async function setStatus(s: "approved" | "spam" | "pending") {
     setBusy(s);
-    const res = await fetch(`/api/admin/comments/${id}`, {
+    const res = await fetch(`/api/admin/comments/${id}/`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: s }),
@@ -27,7 +27,7 @@ export default function CommentRowActions({
   async function del() {
     if (!confirm("Permanently delete this comment? Cannot be undone.")) return;
     setBusy("delete");
-    const res = await fetch(`/api/admin/comments/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/comments/${id}/`, { method: "DELETE" });
     setBusy(null);
     if (res.ok) router.refresh();
   }

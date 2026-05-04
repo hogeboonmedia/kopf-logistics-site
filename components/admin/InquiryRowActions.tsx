@@ -18,7 +18,7 @@ export default function InquiryRowActions({ ip, country }: Props) {
     if (!confirm(`Block all submissions from IP ${ip}?`)) return;
     setBusy("ip");
     setMsg(null);
-    const res = await fetch("/api/admin/blocklists", {
+    const res = await fetch("/api/admin/blocklists/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind: "ip", value: ip, reason: "Blocked from inquiries dashboard" }),
@@ -37,7 +37,7 @@ export default function InquiryRowActions({ ip, country }: Props) {
     if (!confirm(`Block ALL submissions from country ${country}?`)) return;
     setBusy("country");
     setMsg(null);
-    const res = await fetch("/api/admin/blocklists", {
+    const res = await fetch("/api/admin/blocklists/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind: "country", value: country, reason: "Blocked from inquiries dashboard" }),
