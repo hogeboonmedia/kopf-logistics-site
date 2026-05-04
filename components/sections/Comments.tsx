@@ -144,7 +144,9 @@ export default function Comments({ postSlug, turnstileSiteKey }: Props) {
     };
 
     try {
-      const res = await fetch("/api/comments", {
+      // Trailing slash matches next.config.ts `trailingSlash: true` to avoid
+      // a 308 redirect that strips the POST body in some browsers.
+      const res = await fetch("/api/comments/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

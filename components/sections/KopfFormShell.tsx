@@ -191,7 +191,12 @@ export default function KopfFormShell({
     };
 
     try {
-      const res = await fetch("/api/contact", {
+      // Note the trailing slash — next.config.ts has `trailingSlash: true`,
+      // so /api/contact would 308-redirect to /api/contact/. Browser fetch
+      // implementations don't always replay POST bodies through 308s, which
+      // surfaced as a misleading "Failed to fetch" error. Hit the canonical
+      // URL directly to avoid the redirect.
+      const res = await fetch("/api/contact/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -31,7 +31,7 @@ export default function BlocklistManager({
     if (!value.trim()) return;
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/admin/blocklists", {
+    const res = await fetch("/api/admin/blocklists/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind, value: value.trim(), reason: reason.trim() || undefined }),
@@ -49,7 +49,7 @@ export default function BlocklistManager({
 
   async function remove(v: string) {
     if (!confirm(`Remove "${v}" from blocklist?`)) return;
-    const res = await fetch("/api/admin/blocklists", {
+    const res = await fetch("/api/admin/blocklists/", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ kind, value: v }),
