@@ -58,6 +58,35 @@ function json(payload: unknown, status = 200) {
   return NextResponse.json(payload, { status });
 }
 
+/**
+ * Convert leaked markdown to HTML so the chat bubble doesn't show raw
+ * asterisks or brackets when the LLM ignores our HTML-only instruction.
+ *
+ * Conservative — only handles the four most common patterns the model
+ * drops in (bold, italic, markdown links, paragraph breaks). Anything
+ * else stays as-is.
+ */
+function sanitizeMarkdownLeaks(text: string): string {
+  return (
+    text
+      // [label](url) → <a href="url">label</a>
+      // Allow http(s), mailto, tel, and relative paths starting with /.
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+|tel:[^\s)]+|\/[^\s)]*)\)/g,
+        '<a href="$2">$1</a>',
+      )
+      // **bold** → <strong>bold</strong> (non-greedy, no nested **)
+      .replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>")
+      // *italic* / _italic_ → <em> (only single-char delimiters that aren't
+      // part of an already-handled bold)
+      .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, "<em>$1</em>")
+      // Double newlines (markdown paragraph) → <br><br>
+      .replace(/\n\n+/g, "<br><br>")
+      // Single newlines → <br>
+      .replace(/\n/g, "<br>")
+  );
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -121,15 +150,21 @@ export async function POST(req: NextRequest) {
     // unknown — the Anthropic SDK's ContentBlock union is broader (includes
     // tool_use blocks etc.) but we only request text replies so the runtime
     // shape is safe.
-    const reply = response.content
+    const rawReply = response.content
       .filter((block) => block.type === "text")
       .map((block) => (block as unknown as { type: "text"; text: string }).text)
       .join("\n")
       .trim();
 
-    if (!reply) {
+    if (!rawReply) {
       return json({ ok: false, error: "Empty reply" }, 502);
     }
+
+    // Defensive sanitizer: the system prompt asks for HTML-only formatting,
+    // but the model occasionally slips into markdown (**bold**, [link](url)).
+    // Convert the common patterns to HTML so the chat bubble renders cleanly
+    // instead of showing literal asterisks/brackets.
+    const reply = sanitizeMarkdownLeaks(rawReply);
 
     return json({ ok: true, reply });
   } catch (err) {
