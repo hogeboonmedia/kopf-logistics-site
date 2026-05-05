@@ -89,6 +89,7 @@ export const kopfChatConfig: ChatConfig = {
     // ── Shippers ─────────────────────────────────────────────────────────
     {
       id: "shippers",
+      leadCapture: true,
       patterns: [
         "\\bship(per|ping|ment)?s?\\b",
         "\\bsend\\s+(a|some|my)\\s+(load|freight|shipment)",
@@ -116,6 +117,7 @@ export const kopfChatConfig: ChatConfig = {
     // ── Freight Agents (recruiting funnel #1) ────────────────────────────
     {
       id: "agents",
+      leadCapture: true,
       patterns: [
         "\\b(freight\\s+)?agent(s|cy)?\\b",
         "\\bbecome\\s+(an?\\s+)?agent\\b",
@@ -139,6 +141,7 @@ export const kopfChatConfig: ChatConfig = {
     // ── Drivers (recruiting funnel #2) ───────────────────────────────────
     {
       id: "drivers",
+      leadCapture: true,
       patterns: [
         "\\bdriver\\s*(s|jobs?|position|opportunity|opportunities|application|apply)?\\b",
         "\\bdriving\\s+(job|opportunity|career)",
@@ -260,6 +263,7 @@ export const kopfChatConfig: ChatConfig = {
     // ── Contact / phone / email ──────────────────────────────────────────
     {
       id: "contact",
+      leadCapture: true,
       patterns: [
         "\\b(contact|reach\\s+(you|out|someone)|get\\s+in\\s+touch)\\b",
         "\\b(phone|number|call|telephone)\\b",
@@ -281,6 +285,7 @@ export const kopfChatConfig: ChatConfig = {
     // ── Track a load ─────────────────────────────────────────────────────
     {
       id: "tracking",
+      leadCapture: true,
       patterns: [
         "\\b(track|tracking|status\\s+of)\\s+(a|my|the)?\\s*(load|shipment|order|truck|freight)",
         "\\bwhere'?s\\s+(my|the)\\s+(load|shipment|truck|freight)",

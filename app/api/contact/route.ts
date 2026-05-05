@@ -43,8 +43,9 @@ export const dynamic = "force-dynamic";
 const RECIPIENT =
   process.env.CONTACT_RECIPIENT_EMAIL || "recruiter@kopflogisticsgroup.com";
 
-/** Whitelist of accepted form sources. Mirrors the DB CHECK constraint. */
-const VALID_SOURCES = new Set(["contact", "agent", "shippers", "drivers"]);
+/** Whitelist of accepted form sources. Mirrors the DB CHECK constraint
+ * (lib/db/migrations/004 + 005). */
+const VALID_SOURCES = new Set(["contact", "agent", "shippers", "drivers", "chatbot"]);
 
 /** Human-friendly labels for each source — used in email subject + dashboard. */
 const SOURCE_LABEL: Record<string, string> = {
@@ -52,6 +53,7 @@ const SOURCE_LABEL: Record<string, string> = {
   agent: "Freight Agent Application",
   shippers: "Shipper Inquiry",
   drivers: "Driver Application",
+  chatbot: "Chat Lead",
 };
 
 interface Payload {

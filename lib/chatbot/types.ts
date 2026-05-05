@@ -16,6 +16,14 @@ export interface ChatIntent {
   responses: string[];
   /** Sets of follow-up suggestion chips. Bot rotates between sets. */
   suggestions?: string[][];
+  /**
+   * If true, after the response the bot offers an inline lead-capture
+   * form (name + email + phone). Triggers ONCE per session — once the
+   * visitor submits or dismisses, no further intents will re-prompt.
+   * Use for high-intent moments: shipper inquiry, agent/driver application,
+   * tracking, contact, etc.
+   */
+  leadCapture?: boolean;
 }
 
 export interface ChatBehavior {

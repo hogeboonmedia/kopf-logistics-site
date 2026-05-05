@@ -18,34 +18,55 @@ import {
   incrementFail,
   type ResponderState,
 } from "@/lib/chatbot/responder";
+import ChatLeadForm from "./ChatLeadForm";
 
 /**
  * Kopf chatbot.
  *
- * Floating FAB in the bottom-left (the back-to-top button owns bottom-right).
- * Click → slide-up window with a conversational interface that pattern-matches
- * the visitor's question against the intents in lib/chatbot/kopf-config.ts.
+ * Floating FAB in the bottom-right (back-to-top button stacks above it).
+ * Click → slide-up window with a conversational interface.
  *
- * Architecture decisions:
- *   - Pure client-side pattern matching (no AI server). Keeps the bot free
- *     to run, zero new infra. Can add an AI fallback later via /api/chat.
- *   - Closed by default — visitors opt in, no auto-popup ambush.
- *   - z-40 sits below the sticky header (z-50). Doesn't fight the
- *     back-to-top button (it lives bottom-right at z-40).
- *   - Honors prefers-reduced-motion for the typing-indicator delay.
- *   - All bot responses can include simple HTML (links, <strong>) — sanitized
- *     by trusting only the static config strings (no user content rendered as HTML).
+ * Three answer paths, in order:
+ *   1. **Pattern match** — fast, free, deterministic. ~12 hand-written intents
+ *      in lib/chatbot/kopf-config.ts cover navigation + the recruiting funnels.
+ *   2. **LLM fallback** — when nothing matches, POST to /api/chat which calls
+ *      Claude with the Kopf knowledge base (lib/chatbot/kb.ts) injected as
+ *      context. Grounded in real facts, no hallucinated rates or services.
+ *   3. **Frustration handoff** — repeated misses or frustration keywords
+ *      route the visitor to phone + email.
+ *
+ * Lead capture: high-intent intents (flagged `leadCapture: true` in config)
+ * trigger an inline form after the bot's reply. One-shot per session — once
+ * submitted or dismissed, no further prompts. Form posts to /api/contact
+ * with source="chatbot" so leads land in /admin/inquiries alongside other forms.
+ *
+ * Privacy: conversation history lives only in component state — never persisted
+ * across reloads. The LLM call sends the last 6 turns for context only.
  */
 
-interface Message {
+type Role = "user" | "bot";
+
+interface TextMessage {
   id: number;
-  role: "user" | "bot";
-  /** HTML content for bot, plain text for user. */
+  kind: "text";
+  role: Role;
   content: string;
 }
 
+interface LeadFormMessage {
+  id: number;
+  kind: "lead";
+  topic: string;
+  lastUserMessage: string;
+  conversationExcerpt: string;
+}
+
+type Message = TextMessage | LeadFormMessage;
+
 const TYPING_MIN_MS = 350;
 const TYPING_MAX_MS = 900;
+const LEAD_FORM_DELAY_MS = 1200;
+const MAX_HISTORY_TURNS_FOR_LLM = 6;
 
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -67,8 +88,12 @@ export default function Chatbot() {
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
   const [welcomed, setWelcomed] = useState(false);
+  const [leadResolved, setLeadResolved] = useState(false); // submitted or dismissed
 
   const responderRef = useRef<ResponderState>(createResponderState());
+  // History fed to /api/chat so the LLM has conversation context. Trimmed to
+  // last MAX_HISTORY_TURNS_FOR_LLM * 2 messages.
+  const llmHistoryRef = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const idCounterRef = useRef(0);
@@ -82,8 +107,28 @@ export default function Chatbot() {
     return idCounterRef.current;
   }
 
-  function appendMessage(role: "user" | "bot", content: string) {
-    setMessages((prev) => [...prev, { id: nextId(), role, content }]);
+  function appendText(role: Role, content: string) {
+    setMessages((prev) => [...prev, { id: nextId(), kind: "text", role, content }]);
+    if (role === "bot") {
+      pushHistory("assistant", stripHtml(content));
+    } else if (role === "user") {
+      pushHistory("user", content);
+    }
+  }
+
+  function appendLeadForm(topic: string, lastUserMessage: string) {
+    const excerpt = serializeRecentExcerpt(messages, 3);
+    setMessages((prev) => [
+      ...prev,
+      { id: nextId(), kind: "lead", topic, lastUserMessage, conversationExcerpt: excerpt },
+    ]);
+  }
+
+  function pushHistory(role: "user" | "assistant", content: string) {
+    const arr = llmHistoryRef.current;
+    arr.push({ role, content });
+    const max = MAX_HISTORY_TURNS_FOR_LLM * 2;
+    if (arr.length > max) arr.splice(0, arr.length - max);
   }
 
   // Open: greet + render default suggestion chips on first open
@@ -91,7 +136,7 @@ export default function Chatbot() {
     if (!open || welcomed) return;
     setWelcomed(true);
     const greeting = pickRandom(config.behavior.greetings);
-    appendMessage("bot", greeting);
+    appendText("bot", greeting);
 
     const defaults = config.behavior.defaultSuggestions;
     if (defaults.length > 0) {
@@ -100,7 +145,7 @@ export default function Chatbot() {
 
     if (config.behavior.privacyNotice) {
       const notice = `<em style="font-size:12px;opacity:0.7">${config.behavior.privacyNotice}</em>`;
-      window.setTimeout(() => appendMessage("bot", notice), 600);
+      window.setTimeout(() => appendText("bot", notice), 600);
     }
 
     window.setTimeout(() => inputRef.current?.focus(), 280);
@@ -122,26 +167,42 @@ export default function Chatbot() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  function handleSend(textRaw: string) {
+  /** Schedule a lead-capture prompt after the bot's reply renders. */
+  function maybeScheduleLeadCapture(topic: string, lastUserMessage: string) {
+    if (leadResolved) return;
+    window.setTimeout(() => {
+      // Re-check in case it was resolved during the delay
+      setLeadResolved((resolved) => {
+        if (!resolved) {
+          appendLeadForm(topic, lastUserMessage);
+        }
+        return resolved;
+      });
+    }, LEAD_FORM_DELAY_MS);
+  }
+
+  async function handleSend(textRaw: string) {
     const text = textRaw.trim();
     if (!text || typing) return;
 
-    appendMessage("user", text);
+    appendText("user", text);
     setDraft("");
     setSuggestions([]);
     setTyping(true);
 
-    // Frustration short-circuits to the live-human handoff
+    // Frustration short-circuits to the live-human handoff (no lead capture
+    // here — clearly annoyed visitor; just give them the phone number).
     if (isFrustrated(text)) {
       const reply = config.behavior.frustrationResponse;
       window.setTimeout(() => {
         setTyping(false);
-        appendMessage("bot", htmlBlock(reply));
+        appendText("bot", htmlBlock(reply));
         setSuggestions(config.behavior.frustrationSuggestions);
       }, typingDelay(reply, reducedMotion));
       return;
     }
 
+    // 1. Pattern matching — fast path
     const intent = findIntent(text, config.intents);
 
     if (intent) {
@@ -149,28 +210,66 @@ export default function Chatbot() {
       const newSuggestions = getSuggestions(intent, responderRef.current);
       window.setTimeout(() => {
         setTyping(false);
-        appendMessage("bot", htmlBlock(reply));
+        appendText("bot", htmlBlock(reply));
         setSuggestions(newSuggestions);
+        if (intent.leadCapture) {
+          maybeScheduleLeadCapture(intent.id, text);
+        }
       }, typingDelay(reply, reducedMotion));
       return;
     }
 
-    // No match → use a fallback message; escalate to phone after 3 misses
-    const failCount = incrementFail(responderRef.current);
-    const reply =
-      failCount >= 3
-        ? config.behavior.frustrationResponse
-        : pickRandom(config.behavior.fallbackMessages);
-    const fallbackSuggestions =
-      failCount >= 3
-        ? config.behavior.frustrationSuggestions
-        : pickRandom(config.behavior.defaultSuggestions);
+    // 2. LLM fallback — call /api/chat for grounded response
+    try {
+      const res = await fetch("/api/chat/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          // Send last 6 turns (excluding the current user message we just added).
+          // pushHistory already appended; trim it back off the end before sending.
+          history: llmHistoryRef.current.slice(0, -1),
+        }),
+      });
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        reply?: string;
+        error?: string;
+      };
 
-    window.setTimeout(() => {
+      if (res.ok && json.ok && json.reply) {
+        // LLM answered — render and reset the fail counter
+        responderRef.current.failCount = 0;
+        setTyping(false);
+        appendText("bot", json.reply);
+        setSuggestions(pickRandom(config.behavior.defaultSuggestions));
+        return;
+      }
+
+      // 503 (LLM disabled) / 502 / 429 / etc. → use the canned fallback
+      if (res.status === 429 && json.error) {
+        setTyping(false);
+        appendText("bot", json.error);
+        setSuggestions(config.behavior.frustrationSuggestions);
+        return;
+      }
+      throw new Error(json.error || `LLM HTTP ${res.status}`);
+    } catch {
+      // Hard fallback — canned message + frustration counter
+      const failCount = incrementFail(responderRef.current);
+      const reply =
+        failCount >= 3
+          ? config.behavior.frustrationResponse
+          : pickRandom(config.behavior.fallbackMessages);
+      const fallbackSuggestions =
+        failCount >= 3
+          ? config.behavior.frustrationSuggestions
+          : pickRandom(config.behavior.defaultSuggestions);
+
       setTyping(false);
-      appendMessage("bot", htmlBlock(reply));
+      appendText("bot", htmlBlock(reply));
       setSuggestions(fallbackSuggestions);
-    }, typingDelay(reply, reducedMotion));
+    }
   }
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -187,13 +286,13 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* FAB — bottom-left so it doesn't collide with the back-to-top button */}
+      {/* FAB — bottom-RIGHT. Back-to-top button stacks above this. */}
       <button
         type="button"
         aria-label={open ? "Close chat assistant" : "Open chat assistant"}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 left-6 z-40 grid place-items-center w-14 h-14 rounded-full transition-transform duration-200"
+        className="fixed bottom-6 right-6 z-40 grid place-items-center w-14 h-14 rounded-full transition-transform duration-200"
         style={{
           background: "var(--accent)",
           color: "var(--on-accent)",
@@ -208,14 +307,14 @@ export default function Chatbot() {
         )}
       </button>
 
-      {/* Chat window */}
+      {/* Chat window — anchors to right edge, sits above the FAB */}
       <div
         role="dialog"
         aria-label="Kopf Logistics chat assistant"
         aria-hidden={!open}
-        className="fixed left-6 z-40 flex flex-col overflow-hidden transition-all duration-200"
+        className="fixed right-6 z-40 flex flex-col overflow-hidden transition-all duration-200"
         style={{
-          bottom: "calc(1.5rem + 56px + 12px)", // above the FAB
+          bottom: "calc(1.5rem + 56px + 12px)",
           width: "min(380px, calc(100vw - 3rem))",
           maxHeight: "min(620px, calc(100vh - 8rem))",
           background: "var(--card)",
@@ -281,9 +380,21 @@ export default function Chatbot() {
           className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
           style={{ background: "var(--bg-elevated)" }}
         >
-          {messages.map((m) => (
-            <MessageBubble key={m.id} role={m.role} content={m.content} />
-          ))}
+          {messages.map((m) => {
+            if (m.kind === "lead") {
+              return (
+                <ChatLeadForm
+                  key={m.id}
+                  topic={m.topic}
+                  lastUserMessage={m.lastUserMessage}
+                  conversationExcerpt={m.conversationExcerpt}
+                  onSubmitted={() => setLeadResolved(true)}
+                  onDismissed={() => setLeadResolved(true)}
+                />
+              );
+            }
+            return <MessageBubble key={m.id} role={m.role} content={m.content} />;
+          })}
           {typing && <TypingBubble />}
           <div ref={messagesEndRef} />
         </div>
@@ -380,7 +491,7 @@ export default function Chatbot() {
   );
 }
 
-function MessageBubble({ role, content }: { role: "user" | "bot"; content: string }) {
+function MessageBubble({ role, content }: { role: Role; content: string }) {
   if (role === "user") {
     return (
       <div className="flex justify-end">
@@ -407,8 +518,10 @@ function MessageBubble({ role, content }: { role: "user" | "bot"; content: strin
           border: "1px solid var(--hairline)",
           borderRadius: "16px 16px 16px 4px",
         }}
-        // Bot content is HTML from a STATIC, code-controlled config —
-        // never user-supplied — so dangerouslySetInnerHTML is safe here.
+        // Bot HTML comes from one of two trusted sources:
+        //   1. Static config strings in lib/chatbot/kopf-config.ts (links + bold)
+        //   2. LLM output via /api/chat with strict system-prompt formatting rules
+        // Neither contains arbitrary user input, so dangerouslySetInnerHTML is safe.
         dangerouslySetInnerHTML={{ __html: content }}
       />
     </div>
@@ -435,11 +548,20 @@ function TypingBubble() {
   );
 }
 
-/**
- * Convert plain newlines in a config response to <br> while preserving any
- * HTML the config already has (links, <strong>). Conservative — only joins
- * lines, doesn't strip or re-encode anything.
- */
 function htmlBlock(s: string): string {
   return s.replace(/\n/g, "<br>");
+}
+
+/** Strip HTML tags for the LLM history (Claude doesn't need our markup). */
+function stripHtml(s: string): string {
+  return s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
+/** Serialize the last N text turns as plain "User:" / "Bot:" lines for the lead email. */
+function serializeRecentExcerpt(msgs: Message[], turns: number): string {
+  const textTurns = msgs.filter((m): m is TextMessage => m.kind === "text");
+  const tail = textTurns.slice(-turns * 2);
+  return tail
+    .map((m) => `${m.role === "user" ? "Visitor" : "Bot"}: ${stripHtml(m.content)}`)
+    .join("\n");
 }

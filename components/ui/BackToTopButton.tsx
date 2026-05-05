@@ -43,8 +43,11 @@ export default function BackToTopButton() {
       type="button"
       aria-label="Back to top"
       onClick={handleClick}
-      className="fixed bottom-6 right-6 z-40 grid place-items-center w-11 h-11 rounded-full transition-opacity duration-200"
+      className="fixed right-6 z-40 grid place-items-center w-11 h-11 rounded-full transition-opacity duration-200"
       style={{
+        // Stacked ABOVE the chat FAB (which lives at bottom-6 + 56px tall).
+        // bottom: 24px (bottom-6) + 56px FAB + 12px gap = 92px from the viewport floor.
+        bottom: "calc(1.5rem + 56px + 12px)",
         background: "var(--accent)",
         color: "var(--on-accent)",
         boxShadow: "0 6px 20px rgba(0, 0, 0, 0.25)",
