@@ -63,9 +63,14 @@ interface LeadFormMessage {
 
 type Message = TextMessage | LeadFormMessage;
 
-const TYPING_MIN_MS = 350;
-const TYPING_MAX_MS = 900;
-const LEAD_FORM_DELAY_MS = 1200;
+// Delays tuned for a more human pace. Real typing is roughly 40 WPM ≈ 200
+// chars/min ≈ 3.3 chars/sec. We don't go that slow — the bot is meant to
+// be helpful — but we do scale with response length and add jitter.
+const TYPING_BASE_MS = 1200; // floor — even the shortest reply waits this long
+const TYPING_PER_CHAR_MS = 22; // additional ms per character of response
+const TYPING_MAX_MS = 4500; // cap so long replies don't feel stuck
+const TYPING_JITTER_MS = 350; // randomness so the cadence isn't robotic
+const LEAD_FORM_DELAY_MS = 2200; // beat after the bot reply lands
 const MAX_HISTORY_TURNS_FOR_LLM = 6;
 
 function pickRandom<T>(arr: T[]): T {
@@ -73,11 +78,11 @@ function pickRandom<T>(arr: T[]): T {
 }
 
 function typingDelay(text: string, reduced: boolean): number {
-  if (reduced) return 80;
-  const len = text.length;
-  if (len < 100) return TYPING_MIN_MS + Math.random() * 200;
-  if (len < 300) return 600 + Math.random() * 250;
-  return TYPING_MAX_MS + Math.random() * 300;
+  if (reduced) return 120;
+  // Strip HTML tags so we measure visible content length, not markup overhead.
+  const visibleLen = text.replace(/<[^>]*>/g, "").length;
+  const computed = TYPING_BASE_MS + visibleLen * TYPING_PER_CHAR_MS + Math.random() * TYPING_JITTER_MS;
+  return Math.min(computed, TYPING_MAX_MS);
 }
 
 export default function Chatbot() {
@@ -88,7 +93,13 @@ export default function Chatbot() {
   const [draft, setDraft] = useState("");
   const [typing, setTyping] = useState(false);
   const [welcomed, setWelcomed] = useState(false);
-  const [leadResolved, setLeadResolved] = useState(false); // submitted or dismissed
+
+  // Lead-capture is one-shot per session. We use a ref (not state) because
+  // the value needs to be read SYNCHRONOUSLY at schedule time, and we set
+  // it eagerly when we schedule (not when the form actually renders) so a
+  // second high-intent message arriving in the same window can't trigger
+  // a duplicate form. Doesn't drive any render so state isn't needed.
+  const leadShownRef = useRef(false);
 
   const responderRef = useRef<ResponderState>(createResponderState());
   // History fed to /api/chat so the LLM has conversation context. Trimmed to
@@ -167,17 +178,16 @@ export default function Chatbot() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  /** Schedule a lead-capture prompt after the bot's reply renders. */
+  /** Schedule a lead-capture prompt after the bot's reply renders.
+   *
+   * Claims the one-shot slot SYNCHRONOUSLY via the ref so a second
+   * high-intent intent arriving during the LEAD_FORM_DELAY_MS window
+   * (or a StrictMode double-invoke in dev) can't queue a duplicate form. */
   function maybeScheduleLeadCapture(topic: string, lastUserMessage: string) {
-    if (leadResolved) return;
+    if (leadShownRef.current) return;
+    leadShownRef.current = true;
     window.setTimeout(() => {
-      // Re-check in case it was resolved during the delay
-      setLeadResolved((resolved) => {
-        if (!resolved) {
-          appendLeadForm(topic, lastUserMessage);
-        }
-        return resolved;
-      });
+      appendLeadForm(topic, lastUserMessage);
     }, LEAD_FORM_DELAY_MS);
   }
 
@@ -388,8 +398,12 @@ export default function Chatbot() {
                   topic={m.topic}
                   lastUserMessage={m.lastUserMessage}
                   conversationExcerpt={m.conversationExcerpt}
-                  onSubmitted={() => setLeadResolved(true)}
-                  onDismissed={() => setLeadResolved(true)}
+                  // Slot is already claimed via leadShownRef when we
+                  // scheduled this form — these callbacks are no-ops now,
+                  // but kept in the API for future "re-prompt on dismiss"
+                  // tweaks.
+                  onSubmitted={() => {}}
+                  onDismissed={() => {}}
                 />
               );
             }
