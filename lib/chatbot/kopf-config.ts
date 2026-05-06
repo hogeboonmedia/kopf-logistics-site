@@ -3,19 +3,29 @@ import type { ChatConfig } from "./types";
 /**
  * Kopf Logistics Group chatbot config.
  *
- * Intent design priorities (in order):
- *   1. Recruiting funnels — agents, drivers — these are the highest-value
- *      conversions for the business. Each routes to its application form.
- *   2. Shipper inquiries — get them to the shipper form or the phone.
- *   3. Brand / about / location — for the casual visitor learning who
- *      Kopf is.
- *   4. Service-line questions — truckload / refrigerated / flatbed /
- *      LTL / power-only. Establishes capability without a hard sell.
- *   5. Catch-alls — phone, hours, contact, frustration → live human.
+ * Conversation design principles (from research synthesis in
+ * docs/chatbot-improvements.md):
  *
- * The bot intentionally does NOT promise rates, transit times, or
- * specific lane availability — those need a human dispatcher. Every
- * trade-quote question routes to the phone (574.349.5600).
+ *   1. SHORT bubbles — keep individual `<br><br>`-separated chunks under
+ *      ~180 characters. Long monologues kill engagement.
+ *
+ *   2. EVERY response ends with a question or a clear next-step CTA.
+ *      The bot's job is to keep the visitor in the conversation, not
+ *      to deliver a brochure.
+ *
+ *   3. MULTI-BUBBLE — break responses with `<br><br>`. The Chatbot
+ *      component renders each chunk as a separate bubble with a
+ *      typing-pause between them, mimicking real text-message cadence.
+ *
+ *   4. PERSONA FLOWS — high-intent intents (shippers, drivers, agents,
+ *      carriers) trigger a structured 2-3 question flow that pre-qualifies
+ *      the lead before the contact form appears. Each answer is captured
+ *      into extra_fields so dispatch knows what they're calling about.
+ *
+ *   5. INDUSTRY-FLUENT TONE — use freight terms correctly (RPM, deadhead,
+ *      drop-and-hook, lumper, detention). Never use buzzword phrasings
+ *      ("optimized", "best-in-class") — they signal you don't actually
+ *      understand the industry and lose credibility instantly.
  */
 
 export const kopfChatConfig: ChatConfig = {
@@ -26,44 +36,42 @@ export const kopfChatConfig: ChatConfig = {
   },
 
   behavior: {
+    // Two-bubble greeting — bot introduces itself as Kayla on first
+    // contact, then asks what they need. The second bubble appears
+    // 1.2s after the first via the multi-bubble renderer. Default
+    // suggestions below double as the role chips.
+    //
+    // Kayla is the bot's persona — referenced in the LLM system prompt
+    // (app/api/chat/route.ts) too. Introducing her here makes the LLM
+    // fallback feel continuous when it kicks in later in the conversation.
     greetings: [
-      "Hey — welcome to Kopf Logistics Group. I can help you find the right page, get you to a quote, or answer questions about driving for us, becoming a freight agent, or shipping a load. What brings you here today?",
-      "Hi there! I'm here to help. Whether you're looking to ship freight, drive for us, run an agency, or just learn about Kopf, I can point you in the right direction. What do you need?",
-      "Welcome to Kopf Logistics. I can help with shipper inquiries, driver applications, freight-agent opportunities, or general questions about the company. What's on your mind?",
+      "Hey — I'm Kayla, Kopf's assistant.<br><br>What brings you here today?",
+      "Hi! I'm Kayla. Glad you stopped by.<br><br>What can I help with?",
+      "Welcome to Kopf — I'm Kayla.<br><br>What are you looking for?",
     ],
+    // Role-routing chips shown on first open. Each maps cleanly to a
+    // pattern in one of the four persona intents below.
     defaultSuggestions: [
       [
         "I want to ship freight",
-        "Become a freight agent",
         "Driver opportunities",
-        "Contact the office",
-      ],
-      [
-        "What services do you offer?",
-        "Where are you located?",
-        "About Kopf Logistics",
-        "Get a quote",
-      ],
-      [
-        "Owner-operator?",
-        "Company driver?",
-        "Refrigerated freight?",
-        "Flatbed / open-deck?",
+        "Become a carrier",
+        "Freight agent program",
       ],
     ],
     privacyNotice:
       "This chat stays on your device. Your conversation isn't stored or shared.",
     fallbackMessages: [
-      "I'm not sure I have a great answer for that. I can help with shipper inquiries, driver and agent applications, our service lines, and general company info. Want to try one of those?",
-      "Hmm, that's a bit outside what I know. I'm best at questions about shipping, becoming a driver or agent, our services (truckload, refrigerated, flatbed, LTL, power-only), or how to reach the office. Try one of those?",
-      "I don't have a good answer for that one. If it's time-sensitive, the dispatch desk at <strong>574.349.5600</strong> is your fastest path. Otherwise — want to ask about shipping, driving, or our agent program?",
+      "Hmm, that's not quite landing for me.<br><br>I can help with shipping, driver/agent applications, or general info about Kopf — which one's closest?",
+      "Not sure I caught that.<br><br>Are you looking to ship freight, drive for us, or run an agency?",
+      "I don't have a great answer for that one.<br><br>Want me to connect you with a person? Dispatch is at <strong>574.349.5600</strong>, or I can grab your info and have someone call you.",
     ],
     frustrationResponse:
-      "I'm sorry I'm not being more helpful. Our team would love to talk to you directly.\n\n<strong>Phone:</strong> 574.349.5600 (24/7 dispatch)\n<strong>Email:</strong> recruiter@kopflogisticsgroup.com\n\n<strong>Office hours:</strong> Mon–Fri 8 AM – 5 PM ET (dispatch is around the clock)",
+      "Sorry I'm coming up short on this.<br><br>You're better off talking to a person — dispatch is at <strong>574.349.5600</strong> (24/7).<br><br>Or drop your info and someone will call you back within 30 minutes. Which works?",
     frustrationSuggestions: [
-      "Call the office",
-      "Submit a contact form",
-      "I want to ship freight",
+      "Have someone call me",
+      "I'll call dispatch",
+      "Try a different question",
     ],
   },
 
@@ -76,17 +84,17 @@ export const kopfChatConfig: ChatConfig = {
         "^(morning|evening|afternoon)$",
       ],
       responses: [
-        "Hey! Welcome to Kopf Logistics. I can help with shipping freight, driver and agent opportunities, or any general questions about the company. What can I do for you?",
-        "Hi! Glad you're here. I can point you toward the right form, the right phone number, or the right page. What are you looking for?",
-        "Hello! I'm here to help. Looking to ship freight, drive for Kopf, or run a freight agency? Or just looking for general info?",
+        "Hey! What can I help you with — shipping freight, driver work, or something else?",
+        "Hi. Are you looking to ship, drive, or run an agency with us?",
+        "Hello. What brings you in today?",
       ],
       suggestions: [
-        ["I want to ship freight", "Become a freight agent", "Driver opportunities"],
-        ["About Kopf Logistics", "What services do you offer?", "Contact info"],
+        ["I want to ship freight", "Driver opportunities", "Freight agent program"],
+        ["Become a carrier", "About Kopf", "Contact info"],
       ],
     },
 
-    // ── Shippers ─────────────────────────────────────────────────────────
+    // ── Shippers (high-intent — flow + lead capture) ─────────────────────
     {
       id: "shippers",
       leadCapture: true,
@@ -102,43 +110,36 @@ export const kopfChatConfig: ChatConfig = {
         "\\brate(s)?\\s+(for|to|on)\\b",
         "\\bhow\\s+much\\s+(to\\s+ship|does\\s+it\\s+cost)",
       ],
+      // Flow runs INSTEAD of `responses` when this intent fires. Three
+      // quick questions pre-qualify the lead so dispatch knows what
+      // they're quoting before they pick up the phone.
+      flow: [
+        {
+          field: "lane",
+          question:
+            "Got it — happy to get you a rate.<br><br>What's the lane (origin → destination)?",
+        },
+        {
+          field: "equipment",
+          question: "What kind of equipment do you need?",
+          chips: ["Dry van", "Reefer", "Flatbed", "Bulk", "Power-only", "Not sure"],
+        },
+        {
+          field: "timing",
+          question: "When do you need pickup?",
+          chips: ["ASAP / today", "This week", "Next week", "Recurring lane"],
+        },
+      ],
+      // Fallback responses if the flow is somehow skipped (legacy).
       responses: [
-        "Great — we'd love to move freight for you. The fastest way to get a quote is:\n\n<strong>Call dispatch:</strong> 574.349.5600 (a real person, 24/7)\n<strong>Submit a shipper inquiry:</strong> <a href=\"/shippers/\">/shippers</a>\n\nOur dispatchers will ask about your origin/destination, weight, equipment type (dry van, reefer, flatbed, etc.), and pickup window. Most quotes go out within the hour during business hours.",
-        "Happy to help. Here's how to get started shipping with Kopf:\n\n1. <strong>Quick rate?</strong> Call <strong>574.349.5600</strong> — dispatch is staffed 24/7\n2. <strong>New customer?</strong> Fill out the shipper form at <a href=\"/shippers/\">/shippers</a> — we'll get your account set up alongside your first quote\n3. <strong>Have a regular lane?</strong> Mention it on the call — we can often line up a dedicated truck\n\nWe move truckload (TL & LTL), refrigerated (reefer), flatbed/open-deck, bulk, and power-only across all 48 states.",
-        "We've been brokering freight since 1966 and we'd love to add you to the customer list. Two ways forward:\n\n<strong>Right now:</strong> 574.349.5600 (dispatch, 24/7)\n<strong>This week:</strong> <a href=\"/shippers/\">/shippers</a> — submit your company info and we'll get you set up as a new customer + quote your first load\n\nIf the load's hot, the phone is faster. If you're shopping carriers for an upcoming move, the form gives us time to put a real proposal together.",
+        "We'd love to move freight for you.<br><br>Fastest path: call dispatch at <strong>574.349.5600</strong> (real person, 24/7).<br><br>Want me to grab your details and have a dispatcher call you back instead?",
       ],
       suggestions: [
-        ["What services do you offer?", "Where do you operate?", "Talk to dispatch"],
-        ["Refrigerated freight?", "Flatbed / open-deck?", "LTL?"],
-        ["Become a customer", "About Kopf", "Contact us"],
+        ["Have someone call me", "Refrigerated freight?", "Flatbed?"],
       ],
     },
 
-    // ── Freight Agents (recruiting funnel #1) ────────────────────────────
-    {
-      id: "agents",
-      leadCapture: true,
-      patterns: [
-        "\\b(freight\\s+)?agent(s|cy)?\\b",
-        "\\bbecome\\s+(an?\\s+)?agent\\b",
-        "\\bagent\\s+program\\b",
-        "\\bagent\\s+(opportunity|opportunities|application|apply)",
-        "\\bindependent\\s+agent\\b",
-        "\\brun\\s+(my\\s+own|an?)\\s+agency\\b",
-        "\\bbroker\\s+(career|opportunity|job)\\b",
-      ],
-      responses: [
-        "We're always looking for experienced freight agents. Here's the short version:\n\n– <strong>Weekly settlement</strong> on clean paperwork\n– <strong>Confidential</strong> — your customer list stays yours\n– <strong>Bring your book</strong> or grow into ours — we support both\n– 50+ years of broker reputation behind every load you cover\n\n<strong>Apply:</strong> <a href=\"/agent/\">/agent</a>\n<strong>Or call:</strong> 574.349.5600 and ask for the agent program",
-        "The Kopf agent program is built around independence: you run your book, we provide the carrier network, credit lines, billing, and tech.\n\n<strong>What we look for:</strong>\n– Brokerage or freight-sales experience\n– Existing customer relationships (helpful but not required)\n– Self-starter with a clean reputation in the industry\n\n<strong>Pay:</strong> weekly commission settlement upon billing\n<strong>Apply:</strong> <a href=\"/agent/\">/agent</a> — application stays strictly confidential",
-        "Glad you're considering Kopf. Quick agent program facts:\n\n<strong>Weekly pay</strong> on settled loads with clean paperwork\n<strong>Your customers stay yours</strong> — we don't poach\n<strong>Tech + back-office</strong> handled, so you focus on freight\n<strong>Family-owned</strong> brokerage since 1966 (Elkhart, IN)\n\nReady to talk? <a href=\"/agent/\">Apply here</a> or call <strong>574.349.5600</strong> and ask for our agent recruiter.",
-      ],
-      suggestions: [
-        ["What's the commission?", "Do I need my own customers?", "Apply now"],
-        ["Tech and back-office support?", "About Kopf", "Contact recruiting"],
-      ],
-    },
-
-    // ── Drivers (recruiting funnel #2) ───────────────────────────────────
+    // ── Drivers (high-intent — flow + lead capture) ──────────────────────
     {
       id: "drivers",
       leadCapture: true,
@@ -155,21 +156,93 @@ export const kopfChatConfig: ChatConfig = {
         "\\bdrive\\s+for\\s+(you|kopf)",
         "\\btrucker\\s+(jobs?|opportunity)?",
       ],
+      flow: [
+        {
+          field: "driver_type",
+          question:
+            "Glad you're checking us out.<br><br>Are you a company driver or owner-operator?",
+          chips: ["Company driver", "Owner-operator", "Either / both"],
+        },
+        {
+          field: "equipment",
+          question: "What do you run?",
+          chips: ["Dry van", "Reefer", "Flatbed", "Multiple"],
+        },
+        {
+          field: "home_state",
+          question:
+            "What state are you based in? (helps us match you with the right lanes)",
+        },
+      ],
       responses: [
-        "We hire both <strong>company drivers</strong> and <strong>owner-operators</strong>. Quick highlights:\n\n– Home-time options: regional, OTR, dedicated\n– Modern equipment, well-maintained\n– Weekly pay\n– 24/7 dispatch backing you up\n\n<strong>Apply:</strong> <a href=\"/drivers/\">/drivers</a>\n<strong>Or call recruiting:</strong> 574.349.5600",
-        "Great — we'd love to talk. Two paths:\n\n<strong>Company driver:</strong> Hourly/mileage pay, benefits, regional and OTR runs\n<strong>Owner-operator:</strong> Lease your equipment to Kopf, keep your independence, plug into our freight + back-office\n\nApply at <a href=\"/drivers/\">/drivers</a> or call <strong>574.349.5600</strong> and ask for driver recruiting. Application takes about 10 minutes.",
-        "Driving for Kopf:\n\n<strong>Equipment:</strong> Late-model tractors, well-maintained trailers (van, reefer, flatbed)\n<strong>Routes:</strong> Regional and OTR, plus dedicated dispatched freight\n<strong>Pay:</strong> Weekly, plus performance bonuses\n<strong>People:</strong> Family-owned since 1966 — dispatch knows your name\n\n<a href=\"/drivers/\">Apply here</a>, or call 574.349.5600 to talk to a recruiter directly.",
+        "We hire company drivers AND owner-operators.<br><br>Are you looking for company driver work or running your own truck?",
       ],
       suggestions: [
-        ["Company driver?", "Owner-operator?", "Apply now"],
-        ["Pay and benefits?", "Home time?", "Equipment?"],
-        ["Talk to recruiting", "About Kopf", "Contact us"],
+        ["Company driver", "Owner-operator", "Either / both"],
       ],
     },
 
-    // ── Carriers (independent fleets) ────────────────────────────────────
+    // ── Freight Agents (high-intent — flow + lead capture) ───────────────
+    // NOTE on regex length: the matcher scores by pattern.length and the
+    // longest match wins. The "about" intent has patterns up to 41 chars
+    // ("\\bcompany\\s+(history|story|info|background)"), so any agent
+    // pattern shorter than that loses when phrasing overlaps (e.g.,
+    // "tell me about your freight agent program"). All patterns below
+    // are intentionally at-or-above 42 chars and include explicit
+    // freight-agent context to win the score on common phrasings.
+    {
+      id: "agents",
+      leadCapture: true,
+      patterns: [
+        // High-confidence "I want to be an agent" phrasings (longest wins)
+        "\\b(want|wanna|like|looking|interested|hoping)\\s+to\\s+(be|become|join|work\\s+as)\\s+(an?\\s+)?(freight\\s+)?agent\\b",
+        "\\b(how\\s+(do|can)\\s+i\\s+|tell\\s+me\\s+about\\s+|info\\s+(on|about)\\s+|details?\\s+(on|about)\\s+)?(becoming|being|joining)\\s+(an?\\s+)?(freight\\s+)?agent\\b",
+        "\\b(freight\\s+)?agent\\s+(program|opportunity|opportunities|application|apply|info|details|recruiting|recruiter|jobs?|career|careers|hiring|sign[\\s-]*up)\\b",
+        "\\b(tell\\s+me\\s+about\\s+|info\\s+(on|about)\\s+|what\\s+(is|about)\\s+)?(your|the|kopf'?s?)\\s+(freight\\s+)?agent\\s+(program|opportunity|model)\\b",
+        "\\b(independent|freight)\\s+agent\\s+(program|opportunity|application|info|career|career\\s+path|details?)\\b",
+        // Direct keyword catches (kept for safety; also length-padded with anchors so they still beat about-history)
+        "(?:^|\\s|[.!?])(?:freight\\s+)?agent(?:s|cy|cies)?(?=[\\s.!?,;:'\"\\-]|$)",
+        "\\bbecome\\s+(an?\\s+)?(freight\\s+)?agent\\b(?:\\s+with\\s+(you|kopf))?",
+        "\\bagent\\s+program(?:me)?(?:\\s+at\\s+kopf)?\\b",
+        "\\bindependent\\s+(freight\\s+)?agent(?:\\s+program)?\\b",
+        "\\brun\\s+(my\\s+own|an?)\\s+(freight\\s+)?(agency|agent\\s+book)\\b",
+        "\\bbroker\\s+(career|opportunity|job|career\\s+path|recruiting)\\b",
+      ],
+      flow: [
+        {
+          field: "book_status",
+          question:
+            "Glad you're considering us.<br><br>Are you bringing an existing book of business, or starting fresh?",
+          chips: ["I have a book", "Starting fresh", "Mix of both"],
+        },
+        {
+          field: "experience_years",
+          question: "Years of brokerage or freight-sales experience?",
+          chips: ["Less than 1", "1–3 years", "3–5 years", "5+ years"],
+        },
+        {
+          field: "annual_gross",
+          question: "Roughly what's your annual gross? (we keep this confidential)",
+          chips: [
+            "Under $500K",
+            "$500K – $2M",
+            "$2M – $5M",
+            "$5M+",
+            "N/A — starting fresh",
+          ],
+        },
+      ],
+      responses: [
+        "Great — Kopf's agent program is one of our most direct routes to growth.<br><br>You keep your customers (we don't poach), get weekly commission on clean paperwork, and plug into our carrier network, credit lines, billing/collections, TMS, and back-office.<br><br>Quick question to point you to the right person — are you bringing an existing book of business, or starting fresh?",
+        "Happy to tell you about it. Independent agents at Kopf keep their customers, get paid weekly on billed paperwork, and get full back-office support — carrier network, credit lines, billing, TMS, insurance options.<br><br>To get you to the right recruiter, are you coming in with an existing book, or starting from zero?",
+      ],
+      suggestions: [["I have a book", "Starting fresh", "Mix of both"]],
+    },
+
+    // ── Carriers (high-intent — flow + lead capture) ─────────────────────
     {
       id: "carriers",
+      leadCapture: true,
       patterns: [
         "\\bcarrier\\s*(s|partnership|setup|application)?\\b",
         "\\bbecome\\s+(a\\s+)?carrier\\b",
@@ -180,14 +253,27 @@ export const kopfChatConfig: ChatConfig = {
         "\\bmc\\s+(number|authority)\\b",
         "\\bauthority\\s+\\d{4,}\\b",
       ],
+      flow: [
+        {
+          field: "active_mc",
+          question:
+            "Welcome — happy to get you set up.<br><br>Do you have an active MC?",
+          chips: ["Yes, active MC", "No / not yet", "In progress"],
+        },
+        {
+          field: "truck_count",
+          question: "How many trucks?",
+          chips: ["1", "2–5", "6–20", "20+"],
+        },
+        {
+          field: "lanes",
+          question: "What lanes do you typically run?",
+        },
+      ],
       responses: [
-        "Welcome — we work with carriers across all 48 states. To get set up to run our freight:\n\n<strong>1. Carrier setup</strong> — we use RMIS for paperwork. Visit <a href=\"https://www.rmissecure.com\" target=\"_blank\" rel=\"noopener\">RMIS</a> and request setup with Kopf Logistics Group.\n<strong>2. Find loads</strong> — we post on the major load boards (DAT, Truckstop) and through Trucker Path\n<strong>3. Call dispatch:</strong> 574.349.5600 for direct freight conversations\n\nWe expect: active MC, clean safety rating, $1M auto liability, $100K cargo. Standard stuff.",
-        "Sure — we're always looking for reliable carrier partners. Quick onboarding:\n\n– <strong>Setup paperwork</strong> through RMIS (we'll send a link, or you can request setup with Kopf Logistics Group on <a href=\"https://www.rmissecure.com\" target=\"_blank\" rel=\"noopener\">rmissecure.com</a>)\n– <strong>Insurance:</strong> $1M auto liability, $100K cargo (standard)\n– <strong>Safety:</strong> Active MC, satisfactory FMCSA rating\n\nOnce you're set up, dispatch can offer freight directly. Call <strong>574.349.5600</strong> with questions.",
+        "Welcome — we work with carriers across all 48 states.<br><br>Do you have an active MC?",
       ],
-      suggestions: [
-        ["Insurance requirements?", "Setup paperwork?", "Talk to dispatch"],
-        ["Driver opportunities?", "About Kopf", "Contact us"],
-      ],
+      suggestions: [["Yes, active MC", "No / not yet"]],
     },
 
     // ── Services / equipment types ───────────────────────────────────────
@@ -207,12 +293,12 @@ export const kopfChatConfig: ChatConfig = {
         "\\bequipment\\s+types?",
       ],
       responses: [
-        "We move freight across every major mode:\n\n<strong>Truckload (TL):</strong> Dry van, dedicated, regional, OTR\n<strong>Less-than-truckload (LTL):</strong> Partial loads with major LTL carriers\n<strong>Refrigerated (reefer):</strong> Temperature-controlled, food-grade\n<strong>Flatbed / open-deck:</strong> Steel, lumber, machinery, oversize\n<strong>Bulk transport:</strong> Liquid and dry bulk\n<strong>Power-only / drop-hook:</strong> We supply the tractor, you provide the trailer (or vice versa)\n<strong>Trailer interchange:</strong> For carriers needing equipment\n\nCall dispatch at <strong>574.349.5600</strong> or visit <a href=\"/shippers/\">/shippers</a> to talk about your specific freight.",
-        "Our service lines:\n\n– <strong>Truckload</strong> (van, dedicated)\n– <strong>LTL</strong> (less-than-truckload)\n– <strong>Refrigerated</strong> / temperature-controlled\n– <strong>Flatbed</strong> / open-deck / step-deck\n– <strong>Bulk</strong> (liquid + dry)\n– <strong>Power-only</strong> & drop-hook\n– <strong>Trailer interchange</strong>\n\nWe operate across all 48 states with terminals in Elkhart IN, Athens GA, and Seaford DE. What kind of freight are you moving?",
+        "We move every major mode: TL, LTL, reefer, flatbed/open-deck, bulk, power-only, drop-and-hook.<br><br>What kind of freight are you working with?",
+        "Truckload, LTL, refrigerated, flatbed, bulk, power-only — all 48 states.<br><br>Looking for a specific equipment type?",
       ],
       suggestions: [
         ["I want to ship freight", "Refrigerated?", "Flatbed?"],
-        ["Where do you operate?", "Get a quote", "Talk to dispatch"],
+        ["Where do you operate?", "Have someone call me"],
       ],
     },
 
@@ -229,12 +315,12 @@ export const kopfChatConfig: ChatConfig = {
         "\\bownership\\b",
       ],
       responses: [
-        "Kopf Logistics Group was founded in <strong>1966</strong> in Elkhart, Indiana, and we've been family-owned ever since. We started as a regional trucking outfit and grew into a full-service freight brokerage moving freight across all 48 states.\n\n<strong>Today:</strong>\n– 50+ years brokering freight\n– Terminals in Elkhart IN, Athens GA, Seaford DE\n– Family-owned and operated\n– Serving shippers, carriers, drivers, and freight agents\n\nLearn more on <a href=\"/about/\">our about page</a>.",
-        "Kopf has been at it since 1966 — over half a century of family ownership and freight relationships.\n\nWe started in <strong>Elkhart, Indiana</strong> and grew the agent network and terminal footprint from there. Today we cover the lower 48 with a full mix of equipment types (dry van, reefer, flatbed, bulk, power-only).\n\nFull company story: <a href=\"/about/\">/about</a>",
+        "Kopf's been at it since 1966 — family-owned since day one, headquartered in Elkhart, IN.<br><br>What drew you to ask about us?",
+        "60+ years in business, family-owned, terminals in Elkhart IN, Athens GA, and Seaford DE.<br><br>Are you here as a shipper, driver, or agent?",
       ],
       suggestions: [
-        ["Where are you located?", "What services do you offer?", "Contact us"],
-        ["Become an agent", "Driver opportunities", "Ship freight"],
+        ["I want to ship freight", "Driver opportunities"],
+        ["Freight agent program", "Where are you located?"],
       ],
     },
 
@@ -251,12 +337,10 @@ export const kopfChatConfig: ChatConfig = {
         "\\b(parking|directions)\\b",
       ],
       responses: [
-        "<strong>Headquarters:</strong> Elkhart, Indiana (since 1966)\n\n<strong>Terminals:</strong>\n– Elkhart, IN (HQ)\n– Athens, GA\n– Seaford, DE\n\n<strong>Office hours:</strong> Mon–Fri 8 AM – 5 PM ET\n<strong>Dispatch:</strong> 24/7 at 574.349.5600\n\nFull contact info on <a href=\"/contact/\">our contact page</a>.",
-        "We're headquartered in Elkhart, IN with terminals in Athens, GA and Seaford, DE.\n\n<strong>Office:</strong> Mon–Fri 8 AM – 5 PM ET\n<strong>Dispatch:</strong> Around the clock — 574.349.5600\n\nNeed to come visit or send paperwork? Use the form at <a href=\"/contact/\">/contact</a> and we'll route you to the right person.",
+        "HQ is Elkhart, IN. Terminals in Athens, GA and Seaford, DE.<br><br>Office hours Mon–Fri 8–5 ET, but dispatch is staffed 24/7 at <strong>574.349.5600</strong>.<br><br>What can I help you with?",
       ],
       suggestions: [
-        ["Contact info", "What services do you offer?", "Talk to dispatch"],
-        ["About Kopf", "Driver opportunities", "Ship freight"],
+        ["I want to ship freight", "Driver opportunities", "Have someone call me"],
       ],
     },
 
@@ -271,14 +355,14 @@ export const kopfChatConfig: ChatConfig = {
         "\\b574\\W*349\\W*5600\\b",
         "\\bspeak\\s+(to|with)\\s+(someone|a\\s+person|a\\s+human|dispatch)",
         "\\bcustomer\\s+service\\b",
+        "\\bhave\\s+someone\\s+call\\s+me\\b",
       ],
       responses: [
-        "<strong>Phone (dispatch, 24/7):</strong> 574.349.5600\n<strong>Recruiting email:</strong> recruiter@kopflogisticsgroup.com\n<strong>General contact form:</strong> <a href=\"/contact/\">/contact</a>\n\nFor freight quotes, call dispatch — fastest path. For driver/agent applications, the forms at <a href=\"/drivers/\">/drivers</a> and <a href=\"/agent/\">/agent</a> are the fastest route.",
-        "Best ways to reach us:\n\n– <strong>574.349.5600</strong> — dispatch is always staffed (24/7)\n– <strong>recruiter@kopflogisticsgroup.com</strong> — for driver/agent recruiting\n– <strong><a href=\"/contact/\">/contact</a></strong> — general contact form, routes to the right person\n\nWhat's the topic? Quote, application, or general question?",
+        "Easiest is <strong>574.349.5600</strong> — dispatch picks up 24/7.<br><br>Or I can grab your info and have someone call you back. Which works better?",
+        "Dispatch line: <strong>574.349.5600</strong> (24/7).<br><br>Want me to set up a callback instead?",
       ],
       suggestions: [
-        ["Get a quote", "Apply (driver)", "Apply (agent)"],
-        ["Office hours?", "Where are you located?", "About Kopf"],
+        ["Have someone call me", "I'll call them"],
       ],
     },
 
@@ -293,11 +377,10 @@ export const kopfChatConfig: ChatConfig = {
         "\\beta\\s+(on|for)?\\b",
       ],
       responses: [
-        "For load tracking, the fastest path is to call dispatch directly — they have live visibility on every truck:\n\n<strong>Dispatch (24/7):</strong> 574.349.5600\n\nHave your <strong>load number or PO</strong> ready and they'll get you a status in under a minute. If it's outside business hours, the on-call dispatcher will still pick up.",
-        "Call dispatch at <strong>574.349.5600</strong> with your load number — they have real-time visibility and can give you an ETA on the spot. Dispatch is staffed 24/7, including holidays.",
+        "For a live status, dispatch needs your load number — they have real-time visibility.<br><br>Quickest path: <strong>574.349.5600</strong>. Want me to grab your info and have them call you instead?",
       ],
       suggestions: [
-        ["Talk to dispatch", "I want to ship freight", "Contact us"],
+        ["Have someone call me", "I'll call dispatch"],
       ],
     },
 
@@ -309,10 +392,10 @@ export const kopfChatConfig: ChatConfig = {
         "\\b(industry\\s+news|freight\\s+news|trucking\\s+news)",
       ],
       responses: [
-        "We publish regularly on industry topics, regulations, technology, and Kopf company updates. Browse it all at <a href=\"/blog/\">/blog</a>.",
+        "Industry articles and Kopf updates live at <a href=\"/blog/\">/blog</a>.<br><br>Anything specific you're looking for?",
       ],
       suggestions: [
-        ["About Kopf", "Services", "Contact us"],
+        ["I want to ship freight", "Driver opportunities", "About Kopf"],
       ],
     },
 
@@ -326,13 +409,12 @@ export const kopfChatConfig: ChatConfig = {
         "\\b(perfect|awesome|great|sweet|cool|nice)\\b",
       ],
       responses: [
-        "You bet. If anything else comes up, I'm right here. And dispatch (574.349.5600) is always one call away.",
-        "Anytime. Holler if you need more — and welcome to Kopf if we end up working together!",
-        "Glad I could help. Anything else I can point you toward?",
+        "You bet. Anything else I can help with?",
+        "Glad to help. Anything else on your mind?",
+        "Anytime. Want me to grab your info so someone can follow up?",
       ],
       suggestions: [
-        ["Get a quote", "Apply (driver)", "Apply (agent)"],
-        ["About Kopf", "Services", "Contact us"],
+        ["Have someone call me", "Tell me about services", "I'm good"],
       ],
     },
   ],
