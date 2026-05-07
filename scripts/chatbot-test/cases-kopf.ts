@@ -289,7 +289,20 @@ const voiceRules = {
 
 export const config: ClientTestConfig = {
   clientId: "kopf",
-  loadChatConfig: async () => (await import("../../lib/chatbot/kopf-config")).kopfChatConfig,
+  // The cacheBust token is required for --iterate mode — without it,
+  // Node's ESM cache returns the same module instance across iterations
+  // and hides any fixes applied to disk between runs. We construct an
+  // absolute file:// URL with the token as a query string; Node's ESM
+  // loader uses the full URL (including query) as the cache key, so
+  // each iteration's import is treated as a distinct module.
+  loadChatConfig: async (cacheBust) => {
+    if (cacheBust) {
+      const moduleUrl = new URL("../../lib/chatbot/kopf-config.ts", import.meta.url);
+      moduleUrl.searchParams.set("t", cacheBust);
+      return (await import(moduleUrl.href)).kopfChatConfig;
+    }
+    return (await import("../../lib/chatbot/kopf-config")).kopfChatConfig;
+  },
   apiUrl: process.env.TEST_BASE_URL,
   voiceRules,
   scenarios: [

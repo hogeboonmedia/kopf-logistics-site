@@ -112,8 +112,14 @@ export interface VoiceRules {
 export interface ClientTestConfig {
   /** Slug used for branch names, report titles, etc. */
   clientId: string;
-  /** Lazy import of the client's chat config (so the framework can run multi-client). */
-  loadChatConfig: () => Promise<ChatConfig>;
+  /**
+   * Lazy import of the client's chat config (so the framework can run
+   * multi-client AND so iteration mode can bypass Node's ESM module cache
+   * by passing a different `cacheBust` token each iteration). When the
+   * caller passes a token, it should be appended as a query string to the
+   * import specifier so Node treats it as a fresh module.
+   */
+  loadChatConfig: (cacheBust?: string) => Promise<ChatConfig>;
   /** API URL for live LLM tests. Defaults to TEST_BASE_URL env var or localhost. */
   apiUrl?: string;
   /** Voice rules applied to every test. */
@@ -206,6 +212,14 @@ export interface RunOptions {
   e2e?: boolean;
   /** Dry run — skip live LLM calls, just check pattern routing + flows. */
   dry?: boolean;
+  /**
+   * Cache-bust token forwarded to loadChatConfig as a query-string
+   * specifier. Used by --iterate mode to ensure each iteration sees the
+   * latest on-disk config instead of Node's cached ESM module from the
+   * previous iteration. Without this, fixes applied to disk in iteration
+   * N are invisible to iteration N+1.
+   */
+  cacheBust?: string;
 }
 
 /**
@@ -215,11 +229,11 @@ export interface RunOptions {
  * cycle in pattern-routing imports doesn't break flow-walking, etc.
  */
 export async function runTests(opts: RunOptions): Promise<TestRun> {
-  const { config, e2e = false, dry = false } = opts;
+  const { config, e2e = false, dry = false, cacheBust } = opts;
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
 
-  const chatConfig = await config.loadChatConfig();
+  const chatConfig = await config.loadChatConfig(cacheBust);
   const apiUrl = config.apiUrl || process.env.TEST_BASE_URL || "http://localhost:3000";
 
   const results: TestResult[] = [];

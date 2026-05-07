@@ -91,13 +91,22 @@ export async function generateFix(
     return { ok: false, reason: "No failed assertions to fix" };
   }
 
-  // Read all candidate files so the Improver has the full context
+  // Read all candidate files so the Improver has the full context.
+  //
+  // Cap at 50K chars/file (was 12K). The original 12K limit was truncating
+  // mid-file content that contained the failure — Improver then hallucinated
+  // "before" text that didn't exist in the file. 50K covers a config of
+  // ~1500 lines comfortably.
   const fileSlices: Record<string, string> = {};
+  const PER_FILE_CAP = 50_000;
   for (const f of allowedFiles) {
     if (existsSync(f)) {
       const content = readFileSync(f, "utf8");
-      // Cap at 12K chars per file to control prompt size
-      fileSlices[f] = content.length > 12000 ? content.slice(0, 12000) + "\n// ...[truncated]" : content;
+      fileSlices[f] =
+        content.length > PER_FILE_CAP
+          ? content.slice(0, PER_FILE_CAP) +
+            "\n// ...[truncated to fit prompt — manual review needed for fixes targeting content past this point]"
+          : content;
     }
   }
 

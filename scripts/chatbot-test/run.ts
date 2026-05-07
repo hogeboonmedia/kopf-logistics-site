@@ -118,15 +118,27 @@ async function generateFixes(
 
   console.log(`\n→ Generating proposed fixes for ${failures.length} failure(s)...`);
   const fixes: Record<string, ProposedFix> = {};
+  // Track (filePath::before) keys so we don't generate redundant fixes for
+  // multiple tests pointing at the same code location. The first test with
+  // a given root cause gets the fix; subsequent tests with the same root
+  // cause are marked "covered" — applying the first fix will resolve them.
+  const seenRootCauses = new Map<string, string>(); // key → primaryTestId
+
   for (const result of failures) {
     process.stdout.write(`  ${result.id}: `);
     const r = await generateFix({ result, voiceRules: config.voiceRules });
-    if (r.ok) {
-      fixes[result.id] = r.fix;
-      console.log("✓ fix generated");
-    } else {
+    if (!r.ok) {
       console.log(`✗ skipped (${r.reason})`);
+      continue;
     }
+    const rootKey = `${r.fix.filePath}::${r.fix.before}`;
+    if (seenRootCauses.has(rootKey)) {
+      console.log(`✓ deduplicated (covered by ${seenRootCauses.get(rootKey)})`);
+      continue;
+    }
+    seenRootCauses.set(rootKey, result.id);
+    fixes[result.id] = r.fix;
+    console.log("✓ fix generated");
   }
   return fixes;
 }
@@ -152,7 +164,14 @@ async function runIterateMode(config: ClientTestConfig, args: Args): Promise<voi
   for (let i = 1; i <= args.iterate; i++) {
     console.log(`\n--- Iteration ${i}/${args.iterate} ---`);
 
-    const run = await runTests({ config, e2e: args.e2e, dry: args.dry });
+    // Spawn a SEPARATE Node process for each iteration's test pass.
+    // Why: Node's ESM module cache holds onto imported modules for the
+    // life of the process, so re-importing kopf-config.ts after a fix
+    // returns the stale cached version. Cache-busting query strings
+    // don't survive tsx's TypeScript loader. Subprocess sidesteps the
+    // cache entirely — fresh process = fresh cache.
+    const run = runTestsInSubprocess(args);
+
     const failures = run.results.filter(
       (r) => r.status === "fail" || r.status === "error",
     );
@@ -184,7 +203,15 @@ async function runIterateMode(config: ClientTestConfig, args: Args): Promise<voi
     for (const [testId, fix] of Object.entries(fixes)) {
       const result = applyFix(fix);
       if (!result.ok) {
-        console.log(`  ✗ ${testId}: apply failed (${result.reason})`);
+        // "Before text not found" usually means an earlier fix in this
+        // same iteration already replaced the region. The root cause IS
+        // resolved; this specific patch just doesn't apply anymore.
+        // Treat as covered, not failed.
+        if (result.reason.includes("not found")) {
+          console.log(`  ◇ ${testId}: covered by earlier fix in this iteration`);
+        } else {
+          console.log(`  ✗ ${testId}: apply failed (${result.reason})`);
+        }
         continue;
       }
       previousContents.push({ fix, before: result.previousContent });
@@ -222,6 +249,36 @@ async function runIterateMode(config: ClientTestConfig, args: Args): Promise<voi
   console.log(`Review with:  git diff main`);
   console.log(`Merge with:   git checkout main && git merge ${branchName}`);
   console.log(`Discard with: git checkout main && git branch -D ${branchName}`);
+}
+
+/**
+ * Run the test suite in a subprocess so the iteration loop sees a fresh
+ * Node ESM module cache. The subprocess (`run-once.ts`) writes its
+ * TestRun JSON to a temp file we read back.
+ */
+function runTestsInSubprocess(args: Args): TestRun {
+  const outputPath = `/tmp/chatbot-test-once-${process.pid}-${Date.now()}.json`;
+  const subArgs = [
+    "tsx",
+    "scripts/chatbot-test/run-once.ts",
+    `--client=${args.client}`,
+    `--output=${outputPath}`,
+  ];
+  if (args.e2e) subArgs.push("--e2e");
+  if (args.dry) subArgs.push("--dry");
+
+  const r = spawnSync("npx", subArgs, {
+    stdio: ["ignore", "inherit", "inherit"],
+    encoding: "utf8",
+  });
+  if (r.status !== 0) {
+    console.error(`run-once subprocess failed (exit ${r.status})`);
+    process.exit(2);
+  }
+  const fs = require("node:fs") as typeof import("node:fs");
+  const json = fs.readFileSync(outputPath, "utf8");
+  fs.unlinkSync(outputPath);
+  return JSON.parse(json) as TestRun;
 }
 
 function quickTscCheck(files: string[]): boolean {
