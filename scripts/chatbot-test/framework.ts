@@ -237,7 +237,7 @@ export async function runTests(opts: RunOptions): Promise<TestRun> {
     try {
       switch (scenario.kind) {
         case "pattern-routing":
-          result = runPatternRouting(scenario, chatConfig);
+          result = runPatternRouting(scenario, chatConfig, config.voiceRules);
           break;
         case "flow-walking":
           result = runFlowWalking(scenario, chatConfig, config.voiceRules);
