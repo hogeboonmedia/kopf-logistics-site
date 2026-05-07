@@ -25,9 +25,20 @@ export const KOPF_KB = `
   carriers across all 48 states. We are NOT an asset-based carrier — we
   broker freight to a vetted network of trucking partners.
 - **Phone (dispatch, 24/7/365):** 574.349.5600
-- **Recruiting email:** recruiter@kopflogisticsgroup.com
+- **Public recruiting email** (visitors can write here directly):
+  recruiter@kopflogisticsgroup.com
 - **Office hours:** Monday–Friday, 8:00 AM – 5:00 PM Eastern. Dispatch is
   staffed around the clock including weekends and holidays.
+
+## How chat leads are handled (do NOT volunteer specifics)
+When a visitor submits through this chat, their info goes to the Kopf
+recruiting team for follow-up. NEVER claim it lands in a specific
+mailbox — internal routing is configured via env vars and can change
+without notice. If a visitor specifically asks where their info goes,
+say something like: "It goes straight to our recruiting team — they
+typically follow up within 30 minutes during business hours, otherwise
+the next morning." Do NOT name a specific email address as the
+destination.
 
 ## Terminals
 - **Elkhart, IN** — Headquarters
