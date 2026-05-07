@@ -1,7 +1,7 @@
 /**
  * GitHub OAuth proxy — step 1 (initiate auth).
  *
- * Sveltia/Decap CMS pops a window pointed at this endpoint when Marissa
+ * Sveltia/Decap CMS pops a window pointed at this endpoint when the admin
  * clicks "Login with GitHub" in the /admin/ editor. We:
  *   1. Mint a CSRF state token, set it as an httpOnly cookie.
  *   2. Redirect the popup to GitHub's OAuth authorize URL.

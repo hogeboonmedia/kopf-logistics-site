@@ -3,7 +3,7 @@
 -- The chatbot widget lets visitors drop their contact info inside the chat
 -- after a high-intent moment (asking about shipping, agent program, drivers).
 -- Those leads route through the same /api/contact pipeline as the other
--- forms, but tagged source='chatbot' so Marissa can see at a glance which
+-- forms, but tagged source='chatbot' so an admin can see at a glance which
 -- channel drove the lead.
 --
 -- Idempotent: drops + re-adds the constraint each run.

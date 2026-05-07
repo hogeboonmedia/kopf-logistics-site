@@ -6,7 +6,7 @@
 -- company name, employment type, etc.) live in a JSONB `extra_fields` column
 -- so the schema doesn't have to change every time a form gets a new question.
 --
--- Marissa's /admin/inquiries dashboard reads `source` to filter / count
+-- The /admin/inquiries dashboard reads `source` to filter / count
 -- submissions by which form they came from.
 
 ALTER TABLE contact_submissions

@@ -1,4 +1,4 @@
--- Migration 003: Marissa-editable blocklists
+-- Migration 003: admin-editable blocklists
 -- Shared by both contact form (Phase 2) and comment submission (Phase 3).
 -- Managed via /admin/blocklists/.
 
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS blocked_keywords (
   added_by      TEXT
 );
 
--- Pre-seed the most common spam patterns. Marissa can add/remove via admin UI.
+-- Pre-seed the most common spam patterns. an admin can add/remove via admin UI.
 INSERT INTO blocked_countries (country_code, reason) VALUES
   ('PK','Persistent comment / form spam'),
   ('CN','Persistent comment / form spam'),

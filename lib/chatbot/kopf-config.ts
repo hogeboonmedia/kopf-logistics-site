@@ -212,7 +212,7 @@ export const kopfChatConfig: ChatConfig = {
       // the full WP Agent application form (form_id 18269 — see
       // components/sections/AgentApplicationForm.tsx). Field NAMES match the
       // WP form so chatbot-sourced leads cross-reference cleanly when
-      // Marissa filters /admin/inquiries by source.
+      // an admin filters /admin/inquiries by source.
       //
       // Skipped from the WP form (saved for the recruiter call or full
       // /agent application):

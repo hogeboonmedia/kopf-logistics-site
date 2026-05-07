@@ -11,14 +11,14 @@
  * Pipeline (early-reject ordering = save the most expensive checks for last):
  *   1. Honeypot (`website` field) — instant 200 silent drop.
  *   2. Rate limit (10/hour/IP).
- *   3. Marissa-editable blocklists (country, IP, keyword) — silent 200 drop.
+ *   3. Admin-editable blocklists (country, IP, keyword) — silent 200 drop.
  *   4. Cloudflare Turnstile token verification.
  *   5. Field validation.
  *   6. CleanTalk Anti-Spam Cloud check — silent 200 drop if `block`.
  *   7. Mailgun send + DB insert with disposition AND source tag.
  *
  * Every submission is persisted to `contact_submissions` regardless of
- * outcome — Marissa audits at /admin/inquiries (filterable by source).
+ * outcome — admins audit at /admin/inquiries (filterable by source).
  */
 
 import { type NextRequest, NextResponse } from "next/server";
@@ -232,7 +232,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 7. Send email via Mailgun (and persist as 'sent')
-  // Subject pre-tagged with the source so Marissa can filter her inbox.
+  // Subject pre-tagged with the source so the recipient can filter their inbox.
   const subject = `[${sourceLabel}] ${first} ${last}`.trim();
   const geoLine =
     geo.city || geo.country
@@ -327,8 +327,9 @@ function prettyKey(k: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** Build the HTML email body. Renders the source as a colored badge so Marissa
- * can scan her inbox and instantly tell which form a submission came from. */
+/** Build the HTML email body. Renders the source as a colored badge so the
+ * recipient can scan their inbox and instantly tell which form a submission
+ * came from. */
 function renderEmailHtml(args: {
   sourceLabel: string;
   first: string;
