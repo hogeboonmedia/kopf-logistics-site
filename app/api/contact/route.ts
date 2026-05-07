@@ -175,8 +175,14 @@ export async function POST(req: NextRequest) {
     return json({ ok: true });
   }
 
-  // 4. Turnstile (skipped if not configured, eases local dev)
-  if (process.env.TURNSTILE_SECRET_KEY) {
+  // 4. Turnstile (skipped if not configured, eases local dev).
+  //
+  // Skipped entirely for `source === "chatbot"` — there's no Turnstile widget
+  // inside the chat window (would break the conversational UX), and the
+  // chatbot has its own per-IP rate limit on /api/chat upstream. CleanTalk
+  // (step 6 below) still runs for chatbot submissions, so we still get
+  // server-side spam filtering.
+  if (process.env.TURNSTILE_SECRET_KEY && source !== "chatbot") {
     const tsResult = await verifyTurnstile(body.turnstileToken ?? "", geo.ip ?? undefined);
     if (!tsResult.success) {
       await record("blocked_turnstile", tsResult.reason ?? "turnstile failed");
@@ -201,7 +207,12 @@ export async function POST(req: NextRequest) {
   if (source === "contact" && (inquiryBody.length < 5 || inquiryBody.length > 4000)) {
     return json({ ok: false, error: "Please describe your inquiry (5–4000 characters)." }, 400);
   }
-  if (source !== "contact" && phone.length < 7) {
+  // Phone required for the audience-specific application forms (agent,
+  // shippers, drivers) where dispatch needs to call the lead. NOT required
+  // for `source === "chatbot"` because the chat lead form lets visitors pick
+  // their preferred channel (email/phone/text). The chat form already
+  // enforces phone client-side when the visitor picks a phone-or-text channel.
+  if (source !== "contact" && source !== "chatbot" && phone.length < 7) {
     return json({ ok: false, error: "Phone number is required." }, 400);
   }
 

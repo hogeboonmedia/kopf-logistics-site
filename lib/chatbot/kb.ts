@@ -117,43 +117,7 @@ We hire both **company drivers** and **owner-operators**.
   dispatcher offers
 - **Direct dispatch contact:** 574.349.5600
 
-## Trust + transparency (freight-industry essentials)
-
-These are the questions experienced shippers, drivers, and carriers ask
-to vet a broker. Address them directly — evasion kills trust faster
-than bad news.
-
-### Compliance and authority
-- **MC authority:** Active and in good standing
-- **FMCSA-licensed broker** — visitors can verify on the SAFER system
-- **Bonded** per federal requirements
-- **No double-brokering:** Kopf does not double-broker loads. If we book
-  a carrier, that carrier is the one who hauls it.
-- **Written rate confirmations:** Every load gets a written rate con —
-  no verbal-only rate handshakes.
-
-### Carrier payment terms (TODO — confirm exact terms with Marissa)
-- **Standard payment:** Net 30 (PLACEHOLDER — verify with Marissa)
-- **Quick-pay option:** Available with a small discount (PLACEHOLDER —
-  verify exact rate / availability)
-- **Detention pay:** Honored when documented (PLACEHOLDER — verify rate
-  and threshold hours)
-- **Lumper fees:** Reimbursed with receipt (PLACEHOLDER — verify policy)
-
-### Mileage and rate transparency
-- We use industry-standard mileage calculations — no underquoting
-  to win the rate
-- Carriers see deadhead miles called out separately when relevant
-- Rates per mile vary by lane, equipment, season, and market — always
-  defer to dispatch for actual numbers; never quote from this assistant
-
-### Claims process
-- Damage claims handled per the bill of lading + carrier insurance
-  process. Specific timeline and documentation requirements should be
-  confirmed with dispatch (PLACEHOLDER — get Marissa's claims overview
-  for specifics here).
-
-### Spam/sketchy content protection
+## Spam/sketchy content protection
 - **Privacy:** chat conversation is NOT stored or shared
 - **Lead capture:** if a visitor wants to be contacted, we collect name,
   email, phone, and route to dispatch via the /api/contact pipeline (same
