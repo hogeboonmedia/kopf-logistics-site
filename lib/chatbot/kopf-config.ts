@@ -208,35 +208,72 @@ export const kopfChatConfig: ChatConfig = {
         "\\brun\\s+(my\\s+own|an?)\\s+(freight\\s+)?(agency|agent\\s+book)\\b",
         "\\bbroker\\s+(career|opportunity|job|career\\s+path|recruiting)\\b",
       ],
+      // Six-question flow mirrors the highest-value qualifying fields from
+      // the full WP Agent application form (form_id 18269 — see
+      // components/sections/AgentApplicationForm.tsx). Field NAMES match the
+      // WP form so chatbot-sourced leads cross-reference cleanly when
+      // Marissa filters /admin/inquiries by source.
+      //
+      // Skipped from the WP form (saved for the recruiter call or full
+      // /agent application):
+      //   - work_experience           — free-text essay, too much for chat
+      //   - customer_count            — conditional on "yes" book; would
+      //                                 require flow branching
+      //   - gross_profit_12mo,
+      //     profit_margin_per_load    — correlated with gross_sales_12mo
+      //   - how_heard                 — multi-select; can add later if
+      //                                 attribution becomes important
       flow: [
         {
-          field: "book_status",
+          field: "current_position",
           question:
-            "Glad you're considering us.<br><br>Are you bringing an existing book of business, or starting fresh?",
-          chips: ["I have a book", "Starting fresh", "Mix of both"],
+            "Glad you're considering us.<br><br>What's your current role?",
+          chips: [
+            "1099 agent (independent)",
+            "W-2 broker employee",
+            "Owner with my own MC",
+            "Industry experience (non-broker)",
+            "New to freight",
+          ],
         },
         {
-          field: "experience_years",
+          field: "years_brokerage_experience",
           question: "Years of brokerage or freight-sales experience?",
-          chips: ["Less than 1", "1–3 years", "3–5 years", "5+ years"],
+          chips: ["Less than 1", "1–3 years", "3–5 years", "5+ years", "10+ years"],
         },
         {
-          field: "annual_gross",
-          question: "Roughly what's your annual gross? (we keep this confidential)",
+          field: "has_customer_following",
+          question: "Do you have an existing book of business?",
+          chips: ["Yes — full book", "Yes — partial book", "No — starting fresh"],
+        },
+        {
+          field: "gross_sales_12mo",
+          question:
+            "Roughly what's your gross sales over the last 12 months? (kept confidential)",
           chips: [
             "Under $500K",
             "$500K – $2M",
             "$2M – $5M",
-            "$5M+",
+            "$5M – $10M",
+            "$10M+",
             "N/A — starting fresh",
           ],
         },
+        {
+          field: "loads_per_week",
+          question: "Roughly how many loads per week do you currently run?",
+          chips: ["Under 10", "10–25", "25–50", "50+", "N/A"],
+        },
+        {
+          field: "home_state",
+          question: "Last one — what state are you based in?",
+        },
       ],
       responses: [
-        "Great — Kopf's agent program is one of our most direct routes to growth.<br><br>You keep your customers (we don't poach), get weekly commission on clean paperwork, and plug into our carrier network, credit lines, billing/collections, TMS, and back-office.<br><br>Quick question to point you to the right person — are you bringing an existing book of business, or starting fresh?",
-        "Happy to tell you about it. Independent agents at Kopf keep their customers, get paid weekly on billed paperwork, and get full back-office support — carrier network, credit lines, billing, TMS, insurance options.<br><br>To get you to the right recruiter, are you coming in with an existing book, or starting from zero?",
+        "Great — Kopf's agent program is one of our most direct routes to growth.<br><br>You keep your customers (we don't poach), get weekly commission on clean paperwork, and plug into our carrier network, credit lines, billing/collections, TMS, and back-office.<br><br>Quick question to point you to the right recruiter — what's your current role?",
+        "Happy to tell you about it. Independent agents at Kopf keep their customers, get paid weekly on billed paperwork, and get full back-office support — carrier network, credit lines, billing, TMS, insurance options.<br><br>To get you to the right person, what's your current role?",
       ],
-      suggestions: [["I have a book", "Starting fresh", "Mix of both"]],
+      suggestions: [["1099 agent (independent)", "W-2 broker employee", "Owner with my own MC"]],
     },
 
     // ── Carriers (high-intent — flow + lead capture) ─────────────────────
