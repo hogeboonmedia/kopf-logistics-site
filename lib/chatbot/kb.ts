@@ -127,6 +127,9 @@ We hire both **company drivers** and **owner-operators**.
 - **Where we post freight:** DAT, Truckstop, Trucker Path, plus direct
   dispatcher offers
 - **Direct dispatch contact:** 574.349.5600
+- **Livestock:** We don't have a dedicated livestock program. Dispatch can
+  check if a carrier in our network handles that specific lane — call
+  574.349.5600 to ask.
 
 ## Spam/sketchy content protection
 - **Privacy:** chat conversation is NOT stored or shared
