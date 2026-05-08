@@ -270,8 +270,8 @@ export const kopfChatConfig: ChatConfig = {
         },
       ],
       responses: [
-        "Great — Kopf's agent program is one of our most direct routes to growth.<br><br>You keep your customers (we don't poach), get weekly commission on clean paperwork, and plug into our carrier network, credit lines, billing/collections, TMS, and back-office.<br><br>Quick question to point you to the right recruiter — what's your current role?",
-        "Happy to tell you about it. Independent agents at Kopf keep their customers, get paid weekly on billed paperwork, and get full back-office support — carrier network, credit lines, billing, TMS, insurance options.<br><br>To get you to the right person, what's your current role?",
+        "Great — Kopf's agent program is one of our most direct routes to growth.<br><br>You keep your customers (we don't poach), get weekly commission on clean paperwork, and plug into our carrier network, credit lines, billing/collections, TMS, and back-office.<br><br>What's your current role?",
+        "Happy to tell you about it. Independent agents at Kopf keep their customers, get paid weekly on billed paperwork, and get full back-office support — carrier network, credit lines, billing, TMS, insurance options.<br><br>What's your current role?",
       ],
       suggestions: [["1099 agent (independent)", "W-2 broker employee", "Owner with my own MC"]],
     },
