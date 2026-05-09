@@ -20,6 +20,7 @@ import {
 } from "@/lib/chatbot/responder";
 import type { ChatIntent, FlowStep } from "@/lib/chatbot/types";
 import ChatLeadForm from "./ChatLeadForm";
+import ChatErrorBoundary from "./ChatErrorBoundary";
 
 /**
  * Kopf chatbot — natural-conversation edition.
@@ -547,15 +548,16 @@ export default function Chatbot() {
           {messages.map((m) => {
             if (m.kind === "lead") {
               return (
-                <ChatLeadForm
-                  key={m.id}
-                  topic={m.topic}
-                  lastUserMessage={m.lastUserMessage}
-                  conversationExcerpt={m.conversationExcerpt}
-                  prefilledExtras={m.prefilledExtras}
-                  onSubmitted={() => {}}
-                  onDismissed={() => {}}
-                />
+                <ChatErrorBoundary key={m.id}>
+                  <ChatLeadForm
+                    topic={m.topic}
+                    lastUserMessage={m.lastUserMessage}
+                    conversationExcerpt={m.conversationExcerpt}
+                    prefilledExtras={m.prefilledExtras}
+                    onSubmitted={() => {}}
+                    onDismissed={() => {}}
+                  />
+                </ChatErrorBoundary>
               );
             }
             return <MessageBubble key={m.id} role={m.role} content={m.content} />;

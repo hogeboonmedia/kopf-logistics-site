@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 /**
  * Inline lead-capture form rendered inside the chatbot as a "bot bubble."
@@ -55,6 +55,20 @@ export default function ChatLeadForm({
   const [phone, setPhone] = useState("");
   const [wantsText, setWantsText] = useState(false); // shows phone field when true
   const [channel, setChannel] = useState<Channel>("email");
+  const phoneFieldRef = useRef<HTMLInputElement | null>(null);
+
+  // When the visitor picks "call" or "text", the phone field appears below
+  // the radios. The chat window auto-scrolls to the bottom on new messages,
+  // but NOT on local form-state changes — so the new phone field can land
+  // off-screen and the visitor sees a "blank" area where the form was.
+  // Scroll the phone field into view when it mounts.
+  useEffect(() => {
+    if ((channel === "phone" || channel === "text") && phoneFieldRef.current) {
+      phoneFieldRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      // Also focus it so the visitor can start typing immediately
+      phoneFieldRef.current.focus();
+    }
+  }, [channel]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -237,9 +251,11 @@ export default function ChatLeadForm({
           </fieldset>
 
           {/* Phone field appears when channel == phone/text, OR if user
-           * explicitly opts in via the "text me" channel. */}
+           * explicitly opts in via the "text me" channel. Auto-scrolled
+           * into view + focused via useEffect above. */}
           {(channel === "phone" || channel === "text") && (
             <input
+              ref={phoneFieldRef}
               type="tel"
               placeholder={channel === "phone" ? "Phone number" : "Mobile (for SMS)"}
               value={phone}
