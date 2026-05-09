@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:chatbot": "tsx scripts/chatbot-test/run.ts",
+    "test:chatbot:improve": "tsx scripts/chatbot-test/run.ts --improve",
+    "test:chatbot:iterate": "tsx scripts/chatbot-test/run.ts --iterate=3",
+    "test:chatbot:e2e": "tsx scripts/chatbot-test/run.ts --e2e",
+    "test:chatbot:dry": "tsx scripts/chatbot-test/run.ts --dry --no-open"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.93.0",
