@@ -60,7 +60,7 @@ export function getAllPosts(): Post[] {
     const words = wordCount(content);
 
     // Derive year/month/slug from the file path so the URL is the source of
-    // truth (not whatever Marissa typed in the frontmatter editor). This means
+    // truth (not whatever the editor typed in the frontmatter editor). This means
     // a post at content/blog/2026/04/my-post.mdx is *always* served at
     // /2026/04/my-post/ regardless of frontmatter drift. Falls back to
     // frontmatter for any legacy post that doesn't follow the layout.

@@ -1,5 +1,5 @@
 /**
- * Marissa-editable blocklists for countries, IPs, and keywords.
+ * admin-editable blocklists for countries, IPs, and keywords.
  *
  * Used by both the contact form and the comment submission endpoint to
  * reject obvious bad-actor submissions before they hit CleanTalk (saves

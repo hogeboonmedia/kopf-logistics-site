@@ -20,7 +20,7 @@ const COOKIE_NAME = "kopf_admin_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 14; // 14 days
 
 export interface AdminSession {
-  /** GitHub login (e.g. "marissaexample") */
+  /** GitHub login (e.g. "exampleadmin") */
   login: string;
   /** GitHub numeric user id — stable across renames */
   id: number;

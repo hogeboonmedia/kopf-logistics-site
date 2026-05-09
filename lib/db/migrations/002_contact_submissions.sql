@@ -1,5 +1,5 @@
 -- Migration 002: Contact form submissions
--- Persists every contact form submission (sent + blocked) so Marissa can
+-- Persists every contact form submission (sent + blocked) so the admin can
 -- audit the full history at /admin/inquiries/.
 
 CREATE TABLE IF NOT EXISTS contact_submissions (

@@ -4,7 +4,7 @@
  * Pipeline (mirrors /api/contact):
  *   1. Honeypot (`website` field) — silent 200.
  *   2. Rate limit (5/hour/IP).
- *   3. Marissa-editable blocklists (country, IP, keyword) — silent 200, recorded as 'spam'.
+ *   3. admin-editable blocklists (country, IP, keyword) — silent 200, recorded as 'spam'.
  *   4. Cloudflare Turnstile token verification.
  *   5. Field validation (name 2-60, email regex, body 5-2000, slug exists).
  *   6. CleanTalk Anti-Spam Cloud check.

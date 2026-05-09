@@ -2,7 +2,7 @@
  * /admin/moderate — Comment moderation queue.
  *
  * Default view: pending + spam comments grouped by post, newest first.
- * "Approved" tab lets Marissa un-approve a comment if needed.
+ * "Approved" tab lets admins un-approve a comment if needed.
  *
  * Auth gated by middleware.ts. CommentRowActions is a client component that
  * calls /api/admin/comments/[id] for approve/spam/delete.

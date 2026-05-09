@@ -1,5 +1,5 @@
 /**
- * /admin/inquiries — Marissa's contact-form submission dashboard.
+ * /admin/inquiries — Contact-form submission dashboard (admin-only).
  *
  * Lists every submission across every form on the site (general contact,
  * agent application, shipper inquiry, driver application). Each row is

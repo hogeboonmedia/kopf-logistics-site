@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
     });
     ghUser = await userRes.json();
   } catch {
-    // Non-fatal — Sveltia still works without the admin cookie. Marissa just
+    // Non-fatal — Sveltia still works without the admin cookie. the admin just
     // won't have access to /admin/moderate etc. until she retries auth.
   }
 
@@ -107,7 +107,7 @@ export async function GET(req: NextRequest) {
 /** HTML page that posts the token back to Sveltia and closes the popup.
  * Also sets a separate signed session cookie if the GitHub user is in the
  * admin allowlist (so /admin/moderate, /admin/inquiries, /admin/blocklists
- * can identify Marissa without her re-authenticating). */
+ * can identify the admin user without her re-authenticating). */
 async function successPage(
   token: string,
   ghUser: { login?: string; id?: number },
