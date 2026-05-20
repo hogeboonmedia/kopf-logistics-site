@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -48,6 +50,18 @@ const tmsCapabilities = [
   "Disaster Recovery",
 ];
 
+const homeServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://kopflogisticsgroup.com/#freight-brokerage",
+  name: "Freight Brokerage & Logistics Services",
+  description:
+    "Full-service freight brokerage since 1966, providing truckload, temperature-controlled, open-deck, LTL, bulk, and power-only transportation solutions across the contiguous 48 states.",
+  provider: { "@type": "Organization", "@id": "https://kopflogisticsgroup.com/#organization" },
+  areaServed: { "@type": "Country", name: "United States" },
+  url: "https://kopflogisticsgroup.com/",
+};
+
 export default function HomePage() {
   return (
     <>
@@ -58,6 +72,11 @@ export default function HomePage() {
         id="ld-equipment-itemlist"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(equipmentJsonLd()) }}
+      />
+      <Script
+        id="home-service-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeServiceJsonLd) }}
       />
       {/* ═══════════════ HERO ═══════════════ */}
       <section className="relative overflow-hidden isolate">
@@ -89,21 +108,28 @@ export default function HomePage() {
               className="mt-8 inline-flex items-center gap-4 border-l-4 pl-5 kopf-fade-up kopf-fade-up-delay-2"
               style={{ borderColor: "var(--accent)" }}
             >
-              <span className="font-[var(--font-anton)] text-3xl md:text-4xl uppercase tracking-tight leading-none" style={{ color: "var(--text)" }}>
-                50 Years
-              </span>
-              <span className="font-[var(--font-anton)] text-3xl md:text-4xl uppercase tracking-tight leading-none" style={{ color: "var(--text-muted)" }}>
-                of Excellence!
-              </span>
+              <Link href="/about/" className="font-[var(--font-anton)] text-3xl md:text-4xl uppercase tracking-tight leading-none hover:opacity-80 transition-opacity" style={{ color: "var(--accent)" }}>
+                our 50+ year legacy
+              </Link>
             </div>
 
             <p className="mt-8 max-w-2xl text-base md:text-lg leading-relaxed kopf-fade-up kopf-fade-up-delay-3" style={{ color: "var(--text-muted)" }}>
               For over 50 years, Kopf Logistics Group has been a pioneer in the trucking
               logistics sector, offering a 70/30 commission split, dedicated 24/7 office
               support, weekly settlements, and an award-winning Transportation Management
-              System (TMS). We pride ourselves on being a one-stop solution for independent
-              freight agents, shippers, drivers, and carriers, addressing their unique
-              challenges and pain points with innovative solutions and unparalleled support.
+              System (TMS). We pride ourselves on being a one-stop solution for{" "}
+              <Link href="/agent/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                independent freight agent program
+              </Link>
+              {" "}participants,{" "}
+              <Link href="/shippers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                freight shipping services
+              </Link>
+              , drivers, and{" "}
+              <Link href="/carriers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                carrier partnerships
+              </Link>
+              {" "}— addressing unique challenges with innovative solutions and unparalleled support.
             </p>
 
             <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2 kopf-fade-up kopf-fade-up-delay-3">

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -73,9 +75,41 @@ const driverTypes = [
   { label: "Casual", icon: "drivers_casual.png" },
 ];
 
+const driverServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://kopflogisticsgroup.com/drivers/#driver-service",
+  name: "CDL Truck Driver Employment Opportunities",
+  description:
+    "CDL-A driver positions with competitive benefits including regular home time, health & dental insurance, 95% no-touch freight, and owner operator opportunities.",
+  provider: { "@type": "Organization", "@id": "https://kopflogisticsgroup.com/#organization" },
+  areaServed: { "@type": "Country", name: "United States" },
+  url: "https://kopflogisticsgroup.com/drivers/",
+};
+
+const driverBreadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://kopflogisticsgroup.com/" },
+    { "@type": "ListItem", position: 2, name: "Drivers", item: "https://kopflogisticsgroup.com/drivers/" },
+  ],
+};
+
 export default function DriversPage() {
   return (
     <>
+      <Script
+        id="drivers-service-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(driverServiceJsonLd) }}
+      />
+      <Script
+        id="drivers-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(driverBreadcrumbJsonLd) }}
+      />
+
       {/* HERO */}
       <section className="relative overflow-hidden isolate">
         <Image
@@ -146,7 +180,12 @@ export default function DriversPage() {
                 strong presence in the industry. With a range of services like truckload,
                 less-than-truckload (LTL), temperature-controlled shipping, bulk
                 transport, open-deck transport, drop & hook, and drop-trailer services,
-                we cater to a wide variety of shipping needs.
+                we cater to a wide variety of shipping needs. Explore{" "}
+                <Link href="/carriers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                  carrier opportunities
+                </Link>
+                {" "}if you operate your own authority or are looking to run under our
+                broker division.
               </p>
               <p>
                 What sets Kopf Logistics Group apart from other transportation companies
@@ -399,6 +438,12 @@ export default function DriversPage() {
             title="Apply Now"
             kicker="Joining Kopf means becoming part of a team that values your skills, experience, and dedication. Tell us about your background and we'll have our recruiting team reach out within one business day."
           />
+          <p className="mb-8 text-sm text-[var(--color-kopf-bone-muted)] leading-relaxed">
+            <Link href="/contact/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              Apply today
+            </Link>
+            {" "}— our recruiting team will follow up within one business day.
+          </p>
           <DriverApplicationForm
             turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
           />

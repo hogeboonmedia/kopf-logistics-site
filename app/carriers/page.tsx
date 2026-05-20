@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -76,9 +78,86 @@ const settlements = [
   },
 ];
 
+const carrierServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://kopflogisticsgroup.com/carriers/#carrier-service",
+  name: "Contract Carrier Network & Freight Brokerage",
+  description:
+    "Family-owned truck brokerage offering contract carrier partnerships with automated onboarding, competitive pay, and freight opportunities across 48 states.",
+  provider: { "@type": "Organization", "@id": "https://kopflogisticsgroup.com/#organization" },
+  areaServed: { "@type": "Country", name: "United States" },
+  url: "https://kopflogisticsgroup.com/carriers/",
+};
+
+const carrierHowToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "@id": "https://kopflogisticsgroup.com/carriers/#howto",
+  name: "How to Become a Contract Carrier with Kopf Logistics Group",
+  description:
+    "A seamless automated carrier onboarding process to help you comply with regulations and start hauling freight quickly.",
+  url: "https://kopflogisticsgroup.com/carriers/",
+  step: [
+    {
+      "@type": "HowToStep",
+      position: 1,
+      name: "Apply Online",
+      text:
+        "Submit your carrier application through IntelliApp (intelliapp.driverapponline.com/c/kopflogisticsgroup) or MyCarrierPackets.com.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 2,
+      name: "Complete Carrier Onboarding",
+      text:
+        "Provide required insurance documentation: minimum $1M auto liability, $100K motor cargo policy, and workers compensation coverage.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 3,
+      name: "Pass Carrier Qualification",
+      text:
+        "Kopf reviews your US DOT safety rating (Satisfactory required) and verifies insurance requirements and financial strength.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 4,
+      name: "Start Hauling & Get Paid",
+      text:
+        "Receive freight opportunities across 48 states and get paid via standard 24-day ACH or check. After 3 loads, qualify for up to 40% line-haul advance (max $2,500 per load).",
+    },
+  ],
+};
+
+const carrierBreadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://kopflogisticsgroup.com/" },
+    { "@type": "ListItem", position: 2, name: "Carriers", item: "https://kopflogisticsgroup.com/carriers/" },
+  ],
+};
+
 export default function CarriersPage() {
   return (
     <>
+      <Script
+        id="carriers-service-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(carrierServiceJsonLd) }}
+      />
+      <Script
+        id="carriers-howto-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(carrierHowToJsonLd) }}
+      />
+      <Script
+        id="carriers-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(carrierBreadcrumbJsonLd) }}
+      />
+
       {/* ═══════════════ HERO ═══════════════ */}
       <section className="relative overflow-hidden isolate">
         <Image
@@ -156,16 +235,22 @@ export default function CarriersPage() {
               industry through our broker division as a transportation property broker.
               We service reefers, vans and flatbeds throughout the contiguous 48 states.
               We have immediate freight hauling opportunities and view our contract
-              carrier network as the backbone of our company.
+              carrier network as the backbone of our company. The{" "}
+              <Link href="/shippers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                shippers we serve
+              </Link>
+              {" "}range from national manufacturers to regional distributors, providing a
+              steady, reliable stream of freight to fill your trailers.
             </p>
             <p>
               Our carrier partners find joining Kopf Logistics Group is quick, simple, and
               intuitive. With automated carrier onboarding, the carrier approval process
-              starts right away. The entire setup process was designed to suit the needs
-              of Drivers. With new online workflow tools and digital logging systems that
-              simplify operations, joining our network will undoubtedly set new carriers
-              up for success. Contact us today to learn more about how we can help you
-              grow your business.
+              starts right away. Our{" "}
+              <Link href="/agent/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                freight agent partnerships
+              </Link>
+              {" "}also help match your equipment to the right loads faster — agents bring
+              dedicated shipper relationships and keep trucks moving.
             </p>
           </div>
         </div>
@@ -468,6 +553,13 @@ export default function CarriersPage() {
             </Button>
             <Button href="/contact">Talk to a Rep</Button>
           </div>
+          <p className="mt-6 text-sm text-[var(--color-kopf-bone-muted)]">
+            Ready to start hauling?{" "}
+            <Link href="/contact/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              Apply to haul
+            </Link>
+            {" "}and a carrier representative will be in touch within one business day.
+          </p>
         </div>
       </section>
     </>

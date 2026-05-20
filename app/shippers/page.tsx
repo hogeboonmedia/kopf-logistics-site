@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -38,9 +40,53 @@ const servicesOffered = [
   "Owner Operator",
 ];
 
+const shipperServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://kopflogisticsgroup.com/shippers/#shipper-service",
+  name: "Freight Brokerage & Transportation Services",
+  description:
+    "Customized truckload, temperature-controlled, open-deck, LTL, bulk, and power-only transportation solutions for manufacturers and distributors.",
+  provider: { "@type": "Organization", "@id": "https://kopflogisticsgroup.com/#organization" },
+  areaServed: { "@type": "Country", name: "United States" },
+  url: "https://kopflogisticsgroup.com/shippers/",
+  serviceType: [
+    "Truckload",
+    "Temperature-Controlled",
+    "Open-Deck",
+    "Less-Than-Truckload (LTL)",
+    "Bulk Transport",
+    "Power Only",
+    "Drop-Trailer Service",
+    "Drop & Hook Service",
+    "Trailer Interchange",
+    "Owner Operator",
+  ],
+};
+
+const shipperBreadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://kopflogisticsgroup.com/" },
+    { "@type": "ListItem", position: 2, name: "Shippers", item: "https://kopflogisticsgroup.com/shippers/" },
+  ],
+};
+
 export default function ShippersPage() {
   return (
     <>
+      <Script
+        id="shippers-service-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(shipperServiceJsonLd) }}
+      />
+      <Script
+        id="shippers-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(shipperBreadcrumbJsonLd) }}
+      />
+
       {/* ═══════════════ HERO ═══════════════ */}
       <section className="relative overflow-hidden isolate">
         <Image
@@ -71,9 +117,16 @@ export default function ShippersPage() {
             possible service is provided. We offer Truckload, Temperature-Controlled,
             Open-Deck, Less-Than-Truckload (LTL), Bulk Transport, Power Only, Drop-Trailer
             Service, Drop & Hook Service, Trailer Interchange and Owner Operator
-            transportation services across our contract carrier network. We care about
-            delivering your quality product efficiently and safely, which is why we strive
-            to offer the best transportation solutions for our customers.
+            transportation services across{" "}
+            <Link href="/carriers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              our carrier network
+            </Link>
+            . We care about delivering your quality product efficiently and safely. You can
+            also{" "}
+            <Link href="/agent/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              work with an independent freight agent
+            </Link>{" "}
+            for dedicated, personalized logistics support.
           </p>
 
           <div className="mt-10 flex flex-wrap items-start gap-8 kopf-fade-up kopf-fade-up-delay-3">
@@ -241,12 +294,37 @@ export default function ShippersPage() {
             title="Request a Quote"
             kicker="Tell us about your business — contact, DUNS, address, and the nature of what you ship. The information is kept strictly confidential and never shared. Our dispatch team follows up within one business day."
           />
+          <p className="mb-8 text-sm text-[var(--color-kopf-bone-muted)] leading-relaxed">
+            Fill out the form below to{" "}
+            <Link href="/contact/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              request a shipping quote
+            </Link>
+            {" "}— our dispatch team follows up within one business day.
+          </p>
           <ShipperInquiryForm
             turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
           />
           <div className="mt-10 pt-8" style={{ borderTop: "1px solid var(--hairline)" }}>
             <PhoneEmailBlock />
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════ SHIPPER RESOURCES ═══════════════ */}
+      <section className="relative bg-[var(--color-kopf-ink-2)] border-t border-white/[0.05] px-6 lg:px-10 py-16 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="kopf-chapter">§ Resources</span>
+            <span className="h-px w-10 bg-[var(--color-kopf-orange)]" />
+            <span className="kopf-eyebrow">Learn More</span>
+          </div>
+          <p className="text-[var(--color-kopf-bone-muted)] text-base leading-relaxed max-w-2xl">
+            Browse our{" "}
+            <Link href="/blog/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              shipper resources
+            </Link>
+            {" "}— articles, guides, and industry insights to help you optimize freight costs, understand service options, and make informed shipping decisions.
+          </p>
         </div>
       </section>
     </>

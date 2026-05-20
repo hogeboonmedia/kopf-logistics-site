@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Script from "next/script";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
@@ -86,6 +87,27 @@ const faqJsonLd = {
   })),
 };
 
+const agentServiceJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://kopflogisticsgroup.com/agent/#agent-service",
+  name: "Independent Freight Agent Opportunities",
+  description:
+    "Join Kopf Logistics Group as an independent freight agent with up to 70/30 commission split, full back-office support, and a family-owned brokerage behind you.",
+  provider: { "@type": "Organization", "@id": "https://kopflogisticsgroup.com/#organization" },
+  areaServed: { "@type": "Country", name: "United States" },
+  url: "https://kopflogisticsgroup.com/agent/",
+};
+
+const agentBreadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://kopflogisticsgroup.com/" },
+    { "@type": "ListItem", position: 2, name: "Agents", item: "https://kopflogisticsgroup.com/agent/" },
+  ],
+};
+
 export default function AgentPage() {
   return (
     <>
@@ -93,6 +115,16 @@ export default function AgentPage() {
         id="agent-faq-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <Script
+        id="agent-service-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(agentServiceJsonLd) }}
+      />
+      <Script
+        id="agent-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(agentBreadcrumbJsonLd) }}
       />
 
       {/* HERO */}
@@ -169,10 +201,17 @@ export default function AgentPage() {
             <p>
               If you are looking for the best freight agent program, Kopf Logistics
               Group is the place for you. Your primary role as an Independent Freight
-              Agent will be to build long-term relationships with shippers and contract
-              carriers and arrange transportation services. You will be responsible for
-              sourcing contract carriers, negotiating rates, scheduling freight and
-              solving problems quickly and effectively.
+              Agent will be to{" "}
+              <Link href="/shippers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                connect shippers with carriers
+              </Link>
+              {" "}and arrange transportation services. You will be responsible for
+              sourcing from our established{" "}
+              <Link href="/carriers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+                carrier network
+              </Link>
+              , negotiating rates, scheduling freight and solving problems quickly and
+              effectively.
             </p>
             <p>
               Your ability to find innovative solutions, negotiate deals and manage
@@ -210,7 +249,14 @@ export default function AgentPage() {
               With over 300 years combined industry experience, we are growing our
               freight brokerage agency nationwide. We offer up to a 70/30 commission
               split with qualified candidates and weekly commission settlement paid
-              upon billing with clean paperwork.
+              upon billing with clean paperwork. Read the full{" "}
+              <Link
+                href="/2025/12/freight-broker-commission-split/"
+                className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity"
+              >
+                commission structure details
+              </Link>
+              {" "}to understand exactly how agent earnings are calculated.
             </p>
           </div>
           <div className="lg:col-span-5">
@@ -322,6 +368,16 @@ export default function AgentPage() {
             eyebrow="5 Common Questions"
             title="Frequently Asked Questions"
           />
+          <p className="mt-6 text-sm text-[var(--color-kopf-bone-muted)] leading-relaxed">
+            New to the industry?{" "}
+            <Link
+              href="/2024/02/what-is-a-freight-agent-everything-you-need-to-know/"
+              className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity"
+            >
+              Learn what freight agents do
+            </Link>
+            {" "}in our in-depth guide before diving into the FAQs below.
+          </p>
           <div className="mt-14 space-y-5">
             {faqs.map((f, i) => (
               <details
@@ -360,6 +416,13 @@ export default function AgentPage() {
             kicker="The information you submit is kept strictly confidential and will not be shared. Weekly commission settlement is paid upon billing with clean paperwork."
           />
 
+          <p className="mb-8 text-sm text-[var(--color-kopf-bone-muted)] leading-relaxed">
+            Ready to take the next step?{" "}
+            <Link href="/contact/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              Apply to join our agent program
+            </Link>
+            {" "}or submit the form below — we respond within one business day.
+          </p>
           <AgentApplicationForm
             turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
           />

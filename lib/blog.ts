@@ -93,7 +93,7 @@ export function getAllPosts(): Post[] {
     return {
       ...merged,
       bodyHtml: content,
-      urlPath: `/${merged.year}/${merged.month}/${merged.slug}/`,
+      urlPath: `/blog/${pathSlug}/`,
       readingMinutes: Math.max(1, Math.round(words / 220)),
     };
   });
@@ -111,6 +111,10 @@ export function getPostByPath(
   return getAllPosts().find(
     (p) => p.year === year && p.month === month && p.slug === slug
   );
+}
+
+export function getPostBySlug(slug: string): Post | undefined {
+  return getAllPosts().find((p) => p.slug === slug);
 }
 
 export function getRelatedPosts(post: Post, limit = 3): Post[] {

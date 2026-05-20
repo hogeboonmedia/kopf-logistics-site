@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import Script from "next/script";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -66,9 +68,24 @@ const timeline = [
   },
 ];
 
+const aboutBreadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://kopflogisticsgroup.com/" },
+    { "@type": "ListItem", position: 2, name: "About", item: "https://kopflogisticsgroup.com/about/" },
+  ],
+};
+
 export default function AboutPage() {
   return (
     <>
+      <Script
+        id="about-breadcrumb-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutBreadcrumbJsonLd) }}
+      />
+
       {/* HERO */}
       <section className="relative overflow-hidden isolate">
         <Image
@@ -446,7 +463,20 @@ export default function AboutPage() {
             excellence has made us a leader in the industry, and we continue to strive
             for continuous improvement in our processes and services.
           </p>
-          <div className="mt-10">
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--color-kopf-bone-muted)]">
+            <Link href="/shippers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              Shipping solutions
+            </Link>
+            <span aria-hidden="true" className="text-[var(--color-kopf-concrete)]">·</span>
+            <Link href="/carriers/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              Carrier partnerships
+            </Link>
+            <span aria-hidden="true" className="text-[var(--color-kopf-concrete)]">·</span>
+            <Link href="/agent/" className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity">
+              Agent program
+            </Link>
+          </div>
+          <div className="mt-6">
             <Button href="/contact" variant="solid">Contact Us</Button>
           </div>
         </div>
