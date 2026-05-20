@@ -251,7 +251,7 @@ export default function AgentPage() {
               split with qualified candidates and weekly commission settlement paid
               upon billing with clean paperwork. Read the full{" "}
               <Link
-                href="/2025/12/freight-broker-commission-split/"
+                href="/blog/freight-broker-commission-split/"
                 className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity"
               >
                 commission structure details
@@ -371,7 +371,7 @@ export default function AgentPage() {
           <p className="mt-6 text-sm text-[var(--color-kopf-bone-muted)] leading-relaxed">
             New to the industry?{" "}
             <Link
-              href="/2024/02/what-is-a-freight-agent-everything-you-need-to-know/"
+              href="/blog/what-is-a-freight-agent-everything-you-need-to-know/"
               className="text-[var(--color-kopf-orange)] underline underline-offset-2 hover:opacity-80 transition-opacity"
             >
               Learn what freight agents do
