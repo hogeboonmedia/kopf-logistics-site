@@ -2,6 +2,7 @@
 
 import KopfFormShell, {
   TextField,
+  NumericField,
   TextAreaField,
   RadioGroup,
   CheckboxGroup,
@@ -22,6 +23,12 @@ import { US_STATE_OPTIONS_INTL } from "@/lib/us-states";
  * Conditional WP fields (#20 country, #11 customer count) are rendered as
  * always-visible optional inputs here for simplicity — adding React state
  * to dynamically show/hide them is a future polish.
+ *
+ * Every field that asks for a number (phone, years of experience, customer
+ * count, loads/week, and the three money questions) renders as <NumericField>,
+ * which strips non-numeric characters as they are typed. The live WordPress
+ * form accepts free text in all of these — see HOG-587. Currency formats keep
+ * "$", "," and "%" so "$1,250,000" and "18%" still go through.
  *
  * Submissions are tagged source="agent" so they show up under their own
  * filter in /admin/inquiries.
@@ -63,10 +70,10 @@ export default function AgentApplicationForm({
           required
           autoComplete="email"
         />
-        <TextField
+        <NumericField
           label="Phone *"
           name="phone"
-          type="tel"
+          format="phone"
           required
           autoComplete="tel"
         />
@@ -134,10 +141,12 @@ export default function AgentApplicationForm({
         maxLength={2000}
       />
 
-      <TextField
+      <NumericField
         label="How many years of freight brokerage experience do you have? *"
         name="years_brokerage_experience"
+        format="decimal"
         required
+        hint="Numbers only — e.g. 7"
         maxLength={50}
       />
 
@@ -148,37 +157,46 @@ export default function AgentApplicationForm({
         options={["Yes", "No"]}
       />
 
-      <TextField
+      <NumericField
         label="If so, how many customers?"
         name="customer_count"
-        hint='Only fill this in if you answered "Yes" above.'
+        format="integer"
+        hint='Whole number. Only fill this in if you answered "Yes" above.'
         maxLength={50}
       />
 
       {/* — Business volume (WP fields #12, #14, #15, #16) — */}
       <div className="grid md:grid-cols-2 gap-6">
-        <TextField
+        <NumericField
           label="How many loads per week? *"
           name="loads_per_week"
+          format="integer"
           required
+          hint="Whole number — e.g. 25"
           maxLength={50}
         />
-        <TextField
+        <NumericField
           label="Gross sales the last 12 months? *"
           name="gross_sales_12mo"
+          format="currency"
           required
+          hint="Dollars — e.g. $1,250,000"
           maxLength={50}
         />
-        <TextField
+        <NumericField
           label="Gross profit the last 12 months? *"
           name="gross_profit_12mo"
+          format="currency"
           required
+          hint="Dollars — e.g. $1,250,000"
           maxLength={50}
         />
-        <TextField
+        <NumericField
           label="Profit margin per load? *"
           name="profit_margin_per_load"
+          format="currency-or-percent"
           required
+          hint="Dollars or a percentage — e.g. $325 or 18%"
           maxLength={50}
         />
       </div>

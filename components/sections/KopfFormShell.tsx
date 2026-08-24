@@ -410,6 +410,129 @@ export function TextField({
   );
 }
 
+/**
+ * Formats accepted by <NumericField>. Each one names the *character set* the
+ * field allows, not a strict number grammar — the point is to stop someone
+ * typing words into a field that wants a number, without rejecting the way
+ * people actually write money ("$1,250,000") or a rate ("18%").
+ */
+export type NumericFormat =
+  | "integer"
+  | "decimal"
+  | "currency"
+  | "currency-or-percent"
+  | "phone";
+
+/** Characters STRIPPED for each format (everything outside the allowed set).
+ *
+ * `decimal` keeps "," as well as ".": on a locale keyboard the decimal key
+ * types a comma, and stripping it would silently turn "7,5" into "75". */
+const NUMERIC_DISALLOWED: Record<NumericFormat, RegExp> = {
+  integer: /[^0-9]/g,
+  decimal: /[^0-9.,]/g,
+  currency: /[^0-9.,$]/g,
+  "currency-or-percent": /[^0-9.,$%]/g,
+  phone: /[^0-9()+\-. ]/g,
+};
+
+/** Soft keyboard hint per format. */
+const NUMERIC_INPUT_MODE: Record<NumericFormat, "numeric" | "decimal" | "tel"> = {
+  integer: "numeric",
+  decimal: "decimal",
+  currency: "decimal",
+  "currency-or-percent": "decimal",
+  phone: "tel",
+};
+
+/** Strip disallowed characters in place, keeping the caret where the user
+ * left it. Runs on every input event, so it covers typing AND paste.
+ *
+ * The length cap is applied HERE rather than via the `maxLength` attribute:
+ * the browser truncates a paste before this handler sees it, so a long run of
+ * junk characters would consume the whole budget and the digits after it
+ * would never arrive. Strip first, then cap. */
+function sanitizeNumericInput(
+  el: HTMLInputElement,
+  format: NumericFormat,
+  maxLength?: number,
+) {
+  let cleaned = el.value.replace(NUMERIC_DISALLOWED[format], "");
+  if (maxLength !== undefined && cleaned.length > maxLength) {
+    cleaned = cleaned.slice(0, maxLength);
+  }
+  if (cleaned === el.value) return;
+  const caret = el.selectionStart ?? el.value.length;
+  const removed = el.value.length - cleaned.length;
+  el.value = cleaned;
+  const next = Math.max(0, caret - removed);
+  el.setSelectionRange(next, next);
+}
+
+/**
+ * Text input that only accepts numeric answers.
+ *
+ * Enforcement is done by rewriting the input value as the user types rather
+ * than with `pattern` / `type="number"`, on purpose:
+ *   - the <form> renders with `noValidate`, so native constraint validation
+ *     never runs and a `pattern` attribute would silently do nothing;
+ *   - `type="number"` would refuse "$1,250,000" outright, which is exactly
+ *     how an applicant answers the gross-sales questions.
+ * Same markup and styling as <TextField> — only the filtering differs.
+ */
+export function NumericField({
+  label,
+  name,
+  format,
+  required,
+  autoComplete,
+  hint,
+  maxLength,
+}: {
+  label: string;
+  name: string;
+  format: NumericFormat;
+  required?: boolean;
+  autoComplete?: string;
+  hint?: string;
+  maxLength?: number;
+}) {
+  return (
+    <label className="block">
+      <span className="kopf-form-eyebrow block mb-2"><FieldLabel label={label} /></span>
+      <input
+        required={required}
+        name={name}
+        type={format === "phone" ? "tel" : "text"}
+        inputMode={NUMERIC_INPUT_MODE[format]}
+        autoComplete={autoComplete}
+        onInput={(e) => {
+          // Rewriting the value mid-composition strips interim characters and
+          // resets the caret; wait for compositionend instead.
+          if ((e.nativeEvent as InputEvent).isComposing) return;
+          sanitizeNumericInput(e.currentTarget, format, maxLength);
+        }}
+        onCompositionEnd={(e) =>
+          sanitizeNumericInput(e.currentTarget, format, maxLength)
+        }
+        className="kopf-form-input w-full px-4 py-3 focus:outline-none transition"
+        style={{
+          background: "var(--bg)",
+          border: "1px solid var(--hairline-strong)",
+          color: "var(--text)",
+        }}
+      />
+      {hint && (
+        <span
+          className="block mt-1 text-xs font-[var(--font-jetbrains)] tracking-[0.08em]"
+          style={{ color: "var(--text-concrete)" }}
+        >
+          {hint}
+        </span>
+      )}
+    </label>
+  );
+}
+
 export function TextAreaField({
   label,
   name,
